@@ -47,16 +47,7 @@ namespace SQLinq
                     isFirst = false;
                 }
 
-                if (f.Key.StartsWith("["))
-                {
-                    fieldList.Append(f.Key);
-                }
-                else
-                {
-                    fieldList.Append("[");
-                    fieldList.Append(f.Key);
-                    fieldList.Append("]");
-                }
+                fieldList.Append(DialectProvider.Dialect.ParseColumnName(f.Key));
 
                 parameterList.Append(f.Value);
             }

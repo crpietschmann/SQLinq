@@ -155,10 +155,8 @@ namespace SQLinq
         /// <returns>The SQLinq instance to allow for method chaining.</returns>
         public SQLinq<T> Skip(int skip)
         {
-            if (this.OrderByExpressions.Count == 0)
-            {
-                throw new NotSupportedException("SQLinq: Skip can only be performed if OrderBy is specified.");
-            }
+            DialectProvider.Dialect.AssertSkip(this);
+
             this.SkipRecords = skip;
             return this;
         }
@@ -324,10 +322,7 @@ namespace SQLinq
                 //}
             }
 
-            if (!tableName.StartsWith("["))
-            {
-                tableName = string.Format("[{0}]", tableName);
-            }
+            tableName = DialectProvider.Dialect.ParseTableName(tableName);
 
             //if (tableAsName != null)
             //{
@@ -339,7 +334,7 @@ namespace SQLinq
 
             //if (tableName == tableAsName)
             //{
-                return tableName;
+            return tableName;
             //}
             //else
             //{
@@ -432,7 +427,7 @@ namespace SQLinq
                     foreach (var p in props)
                     {
                         var selectName = SqlExpressionCompiler.GetMemberColumnName(p);
-                        var asName = "[" + p.Name + "]";
+                        var asName = DialectProvider.Dialect.ParseColumnName(p.Name);
                         if (selectName == asName)
                         {
                             selectResult.Select.Add(selectName);

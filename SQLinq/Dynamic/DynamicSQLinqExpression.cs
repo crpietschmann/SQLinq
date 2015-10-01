@@ -32,9 +32,9 @@ namespace SQLinq.Dynamic
             for (var i = 0; i < this.Parameters.Length; i++)
             {
                 existingParameterCount++;
-                var paramName = string.Format("@{0}{1}", parameterNamePrefix, existingParameterCount.ToString());
+                var paramName = string.Format("{0}{1}{2}", DialectProvider.Dialect.ParameterPrefix, parameterNamePrefix, existingParameterCount.ToString());
 
-                sql = sql.Replace("@" + i, paramName);
+                sql = sql.Replace(DialectProvider.Dialect.ParameterPrefix + i, paramName);
                 parameters.Add(paramName, this.Parameters[i]);
             }
 

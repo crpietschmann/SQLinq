@@ -31,14 +31,7 @@ namespace SQLinq.Dynamic
             var compiler = new SqlExpressionCompiler(existingParameterCount) { ParameterNamePrefix = parameterNamePrefix };
             var result = compiler.Compile(this.Expression);
 
-
-            var fieldName = this.FieldName;
-            if (!fieldName.StartsWith("[") && !fieldName.Contains("."))
-            {
-                fieldName = "[" + fieldName + "]";
-            }
-
-
+            var fieldName = DialectProvider.Dialect.ParseColumnName(this.FieldName);
 
             result.SQL = result.SQL.Replace("{FieldName}", fieldName);
 

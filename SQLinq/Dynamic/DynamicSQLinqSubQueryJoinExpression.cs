@@ -66,8 +66,8 @@ namespace SQLinq.Dynamic
             for (var i = 0; i < this.Parameters.Length; i++)
             {
                 existingParameterCount++;
-                var key = "@" + parameterNamePrefix + existingParameterCount;
-                clause = clause.Replace("@" + i, key);
+                var key = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + existingParameterCount;
+                clause = clause.Replace(DialectProvider.Dialect.ParameterPrefix + i, key);
                 parameters.Add(key, this.Parameters[i]);
             }
 
