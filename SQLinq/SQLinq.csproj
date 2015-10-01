@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{95AF6DBE-D796-469B-97D1-0C23D664D384}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SQLinq</RootNamespace>
+    <AssemblyName>SQLinq</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile158</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>SQLinqKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compiler\ISqlExpressionResult.cs" />
+    <Compile Include="Compiler\SqlExpressionCompiler.cs" />
+    <Compile Include="Compiler\SqlExpressionCompilerResult.cs" />
+    <Compile Include="Compiler\SqlExpressionCompilerSelectorResult.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqCount.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqInsert.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqJoinOperator.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqSubQueryJoinExpression.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqUpdate.cs" />
+    <Compile Include="Dynamic\Extensions\DynamicSQLinqJoinOperatorExtensions.cs" />
+    <Compile Include="ISQLinqCount.cs" />
+    <Compile Include="ISQLinqIf.cs" />
+    <Compile Include="ISQLinqInsert.cs" />
+    <Compile Include="ISQLinqUpdate.cs" />
+    <Compile Include="SQLinqCollection.cs" />
+    <Compile Include="SQLinqCollectionResult.cs" />
+    <Compile Include="SQLinqCount.cs" />
+    <Compile Include="SQLinqIf.cs" />
+    <Compile Include="SQLinqIfOperator.cs" />
+    <Compile Include="SQLinqIfResult.cs" />
+    <Compile Include="SQLinqInsertResult.cs" />
+    <Compile Include="ISQLinqResult.cs" />
+    <Compile Include="SQLinqInsert.cs" />
+    <Compile Include="SQLinqJoinResult.cs" />
+    <Compile Include="Dynamic\DynamicSQLinq.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqExpression.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqExpressionCollection.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqJoinExpression.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqLambdaExpression.cs" />
+    <Compile Include="Dynamic\DynamicSQLinqWhereOperator.cs" />
+    <Compile Include="Dynamic\IDynamicSQLinqExpression.cs" />
+    <Compile Include="ISQLinqJoinExpression.cs" />
+    <Compile Include="ISQLinq.cs" />
+    <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="SQLinq.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLinqColumnAttribute.cs" />
+    <Compile Include="SQLinqJoinExpression.cs" />
+    <Compile Include="SQLinqSelectResult.cs" />
+    <Compile Include="SQLinqSubQueryAttribute.cs" />
+    <Compile Include="SQLinqTableAttribute.cs" />
+    <Compile Include="SQLinqUpdate.cs" />
+    <Compile Include="SQLinqUpdateResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SQLinqKey.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

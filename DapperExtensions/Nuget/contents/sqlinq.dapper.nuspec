@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SQLinq.Dapper</id>
+    <title>SQLinq.Dapper</title>
+    <version>1.5.0-b5</version>
+    <authors>Chris Pietschmann</authors>
+    <owners>Chris Pietschmann</owners>
+    <licenseUrl>http://sqlinq.codeplex.com/license</licenseUrl>
+    <projectUrl>http://sqlinq.codeplex.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Allows for SQLinq to be more easily used with a little help from "Dapper dot net".</description>
+    <releaseNotes>http://sqlinq.codeplex.com/releases</releaseNotes>
+    <copyright>Copyright (c) 2013 Chris Pietschmann</copyright>
+    <tags>sql dal adhoc generation linq dapper orm database</tags>
+    <dependencies>
+      <dependency id="SQLinq" version="3.0.1-b3" />
+      <dependency id="Dapper" version="1.12.1" />
+    </dependencies>
+  </metadata>
+</package>

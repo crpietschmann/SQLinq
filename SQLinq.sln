@@ -1,0 +1,122 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinq", "SQLinq\SQLinq.csproj", "{95AF6DBE-D796-469B-97D1-0C23D664D384}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinqTest", "SQLinqTest\SQLinqTest.csproj", "{953B054F-B55C-4EA1-8A4D-6E9DDB38CC4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{441D0E72-6273-4819-970C-BF53F21EB931}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		SQLinq.vsmdi = SQLinq.vsmdi
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{A18F3145-788E-46B8-8938-D02B89966652}"
+	ProjectSection(SolutionItems) = preProject
+		Nuget\NuGet.exe = Nuget\NuGet.exe
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{C95EDB39-21C6-4025-A29E-C88EF800D64F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net", "net", "{1E17E797-A512-4548-BB12-5E0FC9BFA2A9}"
+	ProjectSection(SolutionItems) = preProject
+		Nuget\contents\lib\net\SQLinq.dll = Nuget\contents\lib\net\SQLinq.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DapperExtensions", "DapperExtensions", "{1DBE9D80-2BCB-4460-953C-C6C0631161A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinq.Dapper", "DapperExtensions\SQLinq.Dapper\SQLinq.Dapper.csproj", "{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinq.Dapper.Test", "DapperExtensions\SQLinq.Dapper.Test\SQLinq.Dapper.Test.csproj", "{3F9DE692-FBE8-4D31-A41F-FE2FEB175A53}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{C6611665-1E45-427E-B333-F5866DC4DB55}"
+	ProjectSection(SolutionItems) = preProject
+		DapperExtensions\Nuget\NuGet.exe = DapperExtensions\Nuget\NuGet.exe
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{715B669D-0F60-4C52-8CAB-1050BD208360}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net", "net", "{E85F59BD-719A-4454-A728-A12816A61B7B}"
+	ProjectSection(SolutionItems) = preProject
+		DapperExtensions\Nuget\contents\lib\net\SQLinq.Dapper.dll = DapperExtensions\Nuget\contents\lib\net\SQLinq.Dapper.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contents", "contents", "{53366D81-F50A-4A65-9C4E-724E75B0DE73}"
+	ProjectSection(SolutionItems) = preProject
+		Nuget\contents\sqlinq.nuspec = Nuget\contents\sqlinq.nuspec
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contents", "contents", "{AFD80FD5-AE34-4667-9B82-D64BB3F0AA0E}"
+	ProjectSection(SolutionItems) = preProject
+		DapperExtensions\Nuget\contents\sqlinq.dapper.nuspec = DapperExtensions\Nuget\contents\sqlinq.dapper.nuspec
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9CF963C3-86CF-477F-80CB-91E70AE59AC2}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = SQLinq\\SQLinq.csproj
+		SccProjectName1 = SQLinq
+		SccLocalPath1 = SQLinq
+		SccProjectUniqueName2 = SQLinqTest\\SQLinqTest.csproj
+		SccProjectName2 = SQLinqTest
+		SccLocalPath2 = SQLinqTest
+		SccProjectUniqueName3 = DapperExtensions\\SQLinq.Dapper\\SQLinq.Dapper.csproj
+		SccProjectTopLevelParentUniqueName3 = SQLinq.sln
+		SccProjectName3 = DapperExtensions/SQLinq.Dapper
+		SccLocalPath3 = DapperExtensions\\SQLinq.Dapper
+		SccProjectUniqueName4 = DapperExtensions\\SQLinq.Dapper.Test\\SQLinq.Dapper.Test.csproj
+		SccProjectTopLevelParentUniqueName4 = SQLinq.sln
+		SccProjectName4 = DapperExtensions/SQLinq.Dapper.Test
+		SccLocalPath4 = DapperExtensions\\SQLinq.Dapper.Test
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = SQLinq.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{95AF6DBE-D796-469B-97D1-0C23D664D384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95AF6DBE-D796-469B-97D1-0C23D664D384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95AF6DBE-D796-469B-97D1-0C23D664D384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95AF6DBE-D796-469B-97D1-0C23D664D384}.Release|Any CPU.Build.0 = Release|Any CPU
+		{953B054F-B55C-4EA1-8A4D-6E9DDB38CC4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{953B054F-B55C-4EA1-8A4D-6E9DDB38CC4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{953B054F-B55C-4EA1-8A4D-6E9DDB38CC4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{953B054F-B55C-4EA1-8A4D-6E9DDB38CC4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F9DE692-FBE8-4D31-A41F-FE2FEB175A53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F9DE692-FBE8-4D31-A41F-FE2FEB175A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F9DE692-FBE8-4D31-A41F-FE2FEB175A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F9DE692-FBE8-4D31-A41F-FE2FEB175A53}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{53366D81-F50A-4A65-9C4E-724E75B0DE73} = {A18F3145-788E-46B8-8938-D02B89966652}
+		{C95EDB39-21C6-4025-A29E-C88EF800D64F} = {53366D81-F50A-4A65-9C4E-724E75B0DE73}
+		{1E17E797-A512-4548-BB12-5E0FC9BFA2A9} = {C95EDB39-21C6-4025-A29E-C88EF800D64F}
+		{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8} = {1DBE9D80-2BCB-4460-953C-C6C0631161A9}
+		{3F9DE692-FBE8-4D31-A41F-FE2FEB175A53} = {1DBE9D80-2BCB-4460-953C-C6C0631161A9}
+		{C6611665-1E45-427E-B333-F5866DC4DB55} = {1DBE9D80-2BCB-4460-953C-C6C0631161A9}
+		{AFD80FD5-AE34-4667-9B82-D64BB3F0AA0E} = {C6611665-1E45-427E-B333-F5866DC4DB55}
+		{715B669D-0F60-4C52-8CAB-1050BD208360} = {AFD80FD5-AE34-4667-9B82-D64BB3F0AA0E}
+		{E85F59BD-719A-4454-A728-A12816A61B7B} = {715B669D-0F60-4C52-8CAB-1050BD208360}
+	EndGlobalSection
+EndGlobal
