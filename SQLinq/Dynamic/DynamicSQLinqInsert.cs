@@ -29,7 +29,7 @@ namespace SQLinq.Dynamic
             {
                 var fieldName = item.Key;
                 var parameterValue = item.Value;
-                var parameterName = "@" + parameterNamePrefix + _parameterNumber.ToString();
+                var parameterName = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
 
                 fields.Add(fieldName, parameterName);
                 parameters.Add(parameterName, parameterValue);

@@ -71,7 +71,7 @@ namespace SQLinq.Dynamic
             {
                 var fieldName = item.Key;
                 var parameterValue = item.Value;
-                var parameterName = "@" + parameterNamePrefix + _parameterNumber.ToString();
+                var parameterName = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
 
                 fields.Add(fieldName, parameterName);
                 parameters.Add(parameterName, parameterValue);
@@ -82,11 +82,7 @@ namespace SQLinq.Dynamic
 
             // ****************************************************
             // **** FROM ******************************************
-            var tableName = this.Table;
-            if (!tableName.StartsWith("["))
-            {
-                tableName = "[" + tableName + "]";
-            }
+            var tableName = DialectProvider.Dialect.ParseTableName(this.Table);
 
             // ****************************************************
             // **** WHERE *****************************************

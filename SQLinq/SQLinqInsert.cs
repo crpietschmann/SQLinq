@@ -52,7 +52,7 @@ namespace SQLinq
 
                 if (includeInInsert)
                 {
-                    var parameterName = "@" + parameterNamePrefix + _parameterNumber.ToString();
+                    var parameterName = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
 
                     fields.Add(fieldName, parameterName);
                     parameters.Add(parameterName, p.GetValue(this.Data, null));
@@ -89,7 +89,7 @@ namespace SQLinq
                 }
             }
 
-            return string.Format("[{0}]", tableName);
+            return DialectProvider.Dialect.ParseTableName(tableName);
         }
     }
 }

@@ -47,13 +47,9 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.12.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Dapper.1.12.1\lib\net40\Dapper.dll</HintPath>
-    </Reference>
-    <Reference Include="SQLinq, Version=3.0.1.0, Culture=neutral, PublicKeyToken=1c5d57eb9e11fe4b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\SQLinq.3.0.1-b3\lib\net\SQLinq.dll</HintPath>
+    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,6 +60,12 @@
     <Compile Include="DictionaryParameterObject.cs" />
     <Compile Include="IDbConnectionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SQLinq\SQLinq.csproj">
+      <Project>{95af6dbe-d796-469b-97d1-0c23d664d384}</Project>
+      <Name>SQLinq</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

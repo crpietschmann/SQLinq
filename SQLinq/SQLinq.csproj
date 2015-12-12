@@ -53,6 +53,10 @@
     <Compile Include="Compiler\SqlExpressionCompiler.cs" />
     <Compile Include="Compiler\SqlExpressionCompilerResult.cs" />
     <Compile Include="Compiler\SqlExpressionCompilerSelectorResult.cs" />
+    <Compile Include="Dialect\DialectProvider.cs" />
+    <Compile Include="Dialect\ISqlDialect.cs" />
+    <Compile Include="Dialect\OracleDialect.cs" />
+    <Compile Include="Dialect\SqlServerDialect.cs" />
     <Compile Include="Dynamic\DynamicSQLinqCount.cs" />
     <Compile Include="Dynamic\DynamicSQLinqInsert.cs" />
     <Compile Include="Dynamic\DynamicSQLinqJoinOperator.cs" />

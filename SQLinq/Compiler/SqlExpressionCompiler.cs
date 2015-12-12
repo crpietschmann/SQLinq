@@ -98,7 +98,7 @@ namespace SQLinq.Compiler
         private string GetParameterName()
         {
             this.ExistingParameterCount++;
-            return "@" + this.ParameterNamePrefix + this.ExistingParameterCount.ToString();
+            return DialectProvider.Dialect.ParameterPrefix + this.ParameterNamePrefix + this.ExistingParameterCount.ToString();
         }
 
         //private string ProcessExpression(Expression expression, IDictionary<string, object> parameters)
@@ -138,7 +138,7 @@ namespace SQLinq.Compiler
                 {
                     var arg = n.Arguments[i];
                     var field = ProcessExpression(rootExpression, arg, parameters, getParameterName);
-                    var alias = string.Format("[{0}]", n.Members[i].Name);
+                    var alias = DialectProvider.Dialect.ParseColumnName(n.Members[i].Name);
                     if (field == alias)
                     {
                         select.Add(field);
@@ -403,12 +403,7 @@ namespace SQLinq.Compiler
                 }
             }
 
-            if (!retVal.StartsWith("["))
-            {
-                retVal = "[" + retVal + "]";
-            }
-
-            return retVal;
+            return DialectProvider.Dialect.ParseColumnName(retVal);
         }
 
         /// <summary>
@@ -513,7 +508,14 @@ namespace SQLinq.Compiler
                         PropertyInfo pi = null;
                         try
                         {
-                            pi = d.Expression.Member as PropertyInfo;
+                            if (d.Expression is MemberExpression)
+                            {
+                                pi = d.Expression.Member as PropertyInfo;
+                            }
+                            else
+                            {
+                                pi = null;
+                            }
                         }
                         catch
                         {
@@ -552,7 +554,7 @@ namespace SQLinq.Compiler
                         if (addTableAlias)
                         {
                             // Get Table / View Name to Use
-                            var tableName = d.Expression.Name as String;
+                            var tableName = DialectProvider.Dialect.ParseTableName(d.Expression.Name as String);
 
                             fullMemberName = string.Format("[{0}].{1}", tableName, memberName);
                         }
@@ -619,7 +621,7 @@ namespace SQLinq.Compiler
                 if (val != null)
                 {
                     var id = getParameterName();
-                    parameters.Add(id, val);
+                    parameters.Add(id, DialectProvider.Dialect.ConvertParameterValue(val));
                     return id;
                 }
                 
@@ -673,7 +675,7 @@ namespace SQLinq.Compiler
                 else
                 {
                     var id = getParameterName();
-                    parameters.Add(id, val);
+                    parameters.Add(id, DialectProvider.Dialect.ConvertParameterValue(val));
                     return id;
                 }
             }
@@ -692,7 +694,7 @@ namespace SQLinq.Compiler
                 else
                 {
                     var id = getParameterName();
-                    parameters.Add(id, val);
+                    parameters.Add(id, DialectProvider.Dialect.ConvertParameterValue(val));
                     return id;
                 }
             }
