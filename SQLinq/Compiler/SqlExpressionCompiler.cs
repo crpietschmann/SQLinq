@@ -14,6 +14,8 @@ namespace SQLinq.Compiler
     public class SqlExpressionCompiler
     {
         public const string DefaultParameterNamePrefix = "sqlinq_";
+        const string _NULL = "NULL";
+        const string _Space = " ";
 
         public static SqlExpressionCompilerResult Compile(ISqlDialect dialect, int existingParameterCount, string parameterNamePrefix, IEnumerable<Expression> expressions)
         {
@@ -350,7 +352,7 @@ namespace SQLinq.Compiler
             var right = ProcessSingleSideExpression(dialect, rootExpression, e.Right, parameters, getParameterName);
             
             var op = sqlOperator;
-            if (right == "NULL")
+            if (right == _NULL)
             {
                 if (sqlOperator == "=")
                 {
@@ -673,9 +675,9 @@ namespace SQLinq.Compiler
 
                 if (val == null)
                 {
-                    return "NULL";
+                    return _NULL;
                 }
-                else if ((val as string) == " ")
+                else if ((val as string) == _Space)
                 {
                     return "' '";
                 }
@@ -692,9 +694,9 @@ namespace SQLinq.Compiler
 
                 if (val == null)
                 {
-                    return "NULL";
+                    return _NULL;
                 }
-                else if ((val as string) == " ")
+                else if ((val as string) == _Space)
                 {
                     return "' '";
                 }

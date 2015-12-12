@@ -1,10 +1,16 @@
-﻿using System;
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
+//Licensed under the GNU Library General Public License (LGPL)
+//License can be found here: https://github.com/crpietschmann/SQLinq/blob/master/LICENSE
+
+using System;
 using System.Text;
 
 namespace SQLinq
 {
     public class SqlServerDialect : ISqlDialect
     {
+        const string _Space = " ";
+
         public object ConvertParameterValue(object value)
         {
             return value;
@@ -18,9 +24,10 @@ namespace SQLinq
             }
         }
 
+        const string _parameterPrefix = "@";
         public string ParameterPrefix 
         {
-            get { return "@"; }
+            get { return _parameterPrefix; }
         }
 
         public string ParseTableName(string tableName)
@@ -89,7 +96,7 @@ namespace SQLinq
             {
                 foreach (var j in selectResult.Join)
                 {
-                    sb.Append(" ");
+                    sb.Append(_Space);
                     sb.Append(j);
                 }
             }
@@ -143,11 +150,11 @@ namespace SQLinq
                 var sbQuery = sb.ToString();
                 if (sbQuery.ToLower().StartsWith("distinct "))
                 {
-                    return "SELECT DISTINCT TOP " + selectResult.Take.ToString() + " " + sbQuery.Substring(9) + sqlOrderBy;
+                    return "SELECT DISTINCT TOP " + selectResult.Take.ToString() + _Space + sbQuery.Substring(9) + sqlOrderBy;
                 }
                 else
                 {
-                    return "SELECT TOP " + selectResult.Take.ToString() + " " + sbQuery + sqlOrderBy;
+                    return "SELECT TOP " + selectResult.Take.ToString() + _Space + sbQuery + sqlOrderBy;
                 }
             }
 

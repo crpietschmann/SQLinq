@@ -1,9 +1,15 @@
-﻿using System.Text;
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
+//Licensed under the GNU Library General Public License (LGPL)
+//License can be found here: https://github.com/crpietschmann/SQLinq/blob/master/LICENSE
+
+using System.Text;
 
 namespace SQLinq
 {
     public class OracleDialect : ISqlDialect
     {
+        const string _Space = " ";
+
         public object ConvertParameterValue(object value)
         {
             if (value is bool)
@@ -19,9 +25,10 @@ namespace SQLinq
 
         }
 
+        const string _parameterPrefix = ":";
         public string ParameterPrefix
         {
-            get { return ":"; }
+            get { return _parameterPrefix; }
         }
 
         public string ParseTableName(string tableName)
@@ -78,7 +85,7 @@ namespace SQLinq
             {
                 foreach (var j in selectResult.Join)
                 {
-                    sb.Append(" ");
+                    sb.Append(_Space);
                     sb.Append(j);
                 }
             }
