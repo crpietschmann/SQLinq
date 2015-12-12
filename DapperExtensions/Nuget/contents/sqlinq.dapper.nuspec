@@ -11,10 +11,10 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Allows for SQLinq to be more easily used with a little help from "Dapper dot net".</description>
     <releaseNotes>http://sqlinq.codeplex.com/releases</releaseNotes>
-    <copyright>Copyright (c) 2013 Chris Pietschmann</copyright>
+    <copyright>Copyright (c) 2015 Chris Pietschmann</copyright>
     <tags>sql dal adhoc generation linq dapper orm database</tags>
     <dependencies>
-      <dependency id="SQLinq" version="3.0.2-b3" />
+      <dependency id="SQLinq" version="3.0.1-b5" />
       <dependency id="Dapper" version="1.42.0" />
     </dependencies>
   </metadata>
