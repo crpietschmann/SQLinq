@@ -94,7 +94,3 @@ SQLinq.Dapper can also be installed into your project via Nuget!
 [http://nuget.org/packages/SQLinq.Dapper](http://nuget.org/packages/SQLinq.Dapper)  
 
 [![Install SQLinq via Nuget](http://download.codeplex.com/Download?ProjectName=sqlinq&DownloadId=358422 "Install SQLinq via Nuget")](http://nuget.org/packages/SQLinq.Dapper)  
-
-## Contributors
-
-This project is maintained by [Chris Pietschmann](http://pietschsoft.com). He is a Microsoft MVP for Bing Maps, a Co-Founder of [Carto LLC](http://carto.com), and the Owner of [Simplovation LLC](http://simplovation.com) a software development consulting company that specializes in Mapping/GIS related application development.
