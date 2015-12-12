@@ -44,6 +44,40 @@ namespace SQLinqTest
         }
 
         [TestMethod]
+        public void ToSQL_Oracle_001()
+        {
+            var dialect = new OracleDialect();
+
+            var data = new Person
+            {
+                FirstName = "Chris",
+                LastName = "Pietschmann"
+            };
+            var target = new SQLinqInsert<Person>(data, dialect);
+            var actual = (SQLinqInsertResult)target.ToSQL();
+
+            Assert.AreEqual("Person", actual.Table);
+
+            Assert.AreEqual(7, actual.Fields.Count);
+            Assert.AreEqual(":sqlinq_1", actual.Fields["ID"]);
+            Assert.AreEqual(":sqlinq_2", actual.Fields["FirstName"]);
+            Assert.AreEqual(":sqlinq_3", actual.Fields["LastName"]);
+            Assert.AreEqual(":sqlinq_4", actual.Fields["Age"]);
+            Assert.AreEqual(":sqlinq_5", actual.Fields["[Is_Employed]"]);
+            Assert.AreEqual(":sqlinq_6", actual.Fields["ParentID"]);
+            Assert.AreEqual(":sqlinq_7", actual.Fields["Column With Spaces"]);
+
+            Assert.AreEqual(7, actual.Parameters.Count);
+            Assert.AreEqual(Guid.Empty, actual.Parameters[":sqlinq_1"]);
+            Assert.AreEqual("Chris", actual.Parameters[":sqlinq_2"]);
+            Assert.AreEqual("Pietschmann", actual.Parameters[":sqlinq_3"]);
+            Assert.AreEqual(0, actual.Parameters[":sqlinq_4"]);
+            Assert.AreEqual(false, actual.Parameters[":sqlinq_5"]);
+            Assert.AreEqual(Guid.Empty, actual.Parameters[":sqlinq_6"]);
+            Assert.AreEqual(null, actual.Parameters[":sqlinq_7"]);
+        }
+
+        [TestMethod]
         public void ToSQL_002()
         {
             var data = new PersonView

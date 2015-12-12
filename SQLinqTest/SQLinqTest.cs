@@ -1841,6 +1841,21 @@ namespace SQLinqTest
             Assert.AreEqual(2, result.Parameters["@sqlinq_2"]);
         }
 
+        [TestMethod]
+        public void Int_Oracle_Test_001()
+        {
+            var dialect = new OracleDialect();
+            var query = from d in new SQLinq<Person>(dialect)
+                        where d.Age + 1 == 2
+                        select d;
+
+            var result = (SQLinqSelectResult)query.ToSQL();
+
+            Assert.AreEqual("(Age + :sqlinq_1) = :sqlinq_2", result.Where);
+            Assert.AreEqual(1, result.Parameters[":sqlinq_1"]);
+            Assert.AreEqual(2, result.Parameters[":sqlinq_2"]);
+        }
+
         #endregion
 
         #region BOOLEAN METHODS

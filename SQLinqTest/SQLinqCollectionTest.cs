@@ -98,6 +98,20 @@ namespace SQLinqTest
         }
 
         [TestMethod]
+        public void ToSQL_Oracle_001()
+        {
+            var dialect = new OracleDialect();
+
+            var target = new SQLinqCollection();
+            target.Add(new SQLinq<ICar>(dialect));
+
+            var actual = (SQLinqCollectionResult)target.ToSQL();
+
+            Assert.AreEqual(1, actual.Queries.Count);
+            Assert.AreEqual("SELECT * FROM ICar", actual.Queries[0]);
+        }
+
+        [TestMethod]
         public void ToSQL_002()
         {
             var target = new SQLinqCollection();
@@ -113,6 +127,26 @@ namespace SQLinqTest
             Assert.AreEqual(2, actual.Parameters.Count);
             Assert.AreEqual(21, actual.Parameters["@sqlinq_1"]);
             Assert.AreEqual(14, actual.Parameters["@sqlinq_2"]);
+        }
+
+        [TestMethod]
+        public void ToSQL_Oracle_002()
+        {
+            var dialect = new OracleDialect();
+
+            var target = new SQLinqCollection();
+            target.Add(new SQLinq<ICar>(dialect).Where(d => d.WheelDiameter == 21));
+            target.Add(new SQLinq<ICar>(dialect).Where(d => d.WheelDiameter == 14));
+
+            var actual = (SQLinqCollectionResult)target.ToSQL();
+
+            Assert.AreEqual(2, actual.Queries.Count);
+            Assert.AreEqual("SELECT * FROM ICar WHERE WheelDiameter = :sqlinq_1", actual.Queries[0]);
+            Assert.AreEqual("SELECT * FROM ICar WHERE WheelDiameter = :sqlinq_2", actual.Queries[1]);
+
+            Assert.AreEqual(2, actual.Parameters.Count);
+            Assert.AreEqual(21, actual.Parameters[":sqlinq_1"]);
+            Assert.AreEqual(14, actual.Parameters[":sqlinq_2"]);
         }
 
         [TestMethod]
