@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2013 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -13,17 +13,25 @@ namespace SQLinq
     public class SQLinqUpdate<T> : ISQLinqUpdate
     {
         public SQLinqUpdate(T data)
+            : this(data, DialectProvider.Create())
+        { }
+
+        public SQLinqUpdate(T data, ISqlDialect dialect)
         {
             this.Data = data;
 
             this.Expressions = new List<Expression>();
+
+            this.Dialect = dialect;
         }
 
-        public SQLinqUpdate(T data, string tableNameOverride)
-            : this(data)
+        public SQLinqUpdate(T data, string tableNameOverride, ISqlDialect dialect)
+            : this(data, dialect)
         {
             this.TableNameOverride = tableNameOverride;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         public T Data { get; set; }
         public string TableNameOverride { get; set; }
@@ -80,7 +88,7 @@ namespace SQLinq
 
                 if (includeInUpdate)
                 {
-                    var parameterName = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
+                    var parameterName = this.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
 
                     fields.Add(fieldName, parameterName);
                     parameters.Add(parameterName, p.GetValue(this.Data, null));
@@ -95,7 +103,7 @@ namespace SQLinq
             var whereResult = this.ToSQL_Where(_parameterNumber, parameterNamePrefix, parameters);
 
 
-            return new SQLinqUpdateResult
+            return new SQLinqUpdateResult(this.Dialect)
             {
                 Table = tableName,
                 Where = whereResult == null ? null : whereResult.SQL,
@@ -109,7 +117,7 @@ namespace SQLinq
             SqlExpressionCompilerResult whereResult = null;
             if (this.Expressions.Count > 0)
             {
-                whereResult = SqlExpressionCompiler.Compile(parameterNumber, parameterNamePrefix, this.Expressions);
+                whereResult = SqlExpressionCompiler.Compile(this.Dialect, parameterNumber, parameterNamePrefix, this.Expressions);
                 foreach (var item in whereResult.Parameters)
                 {
                     parameters.Add(item.Key, item.Value);
@@ -138,7 +146,7 @@ namespace SQLinq
                 }
             }
 
-            return DialectProvider.Dialect.ParseTableName(tableName);
+            return this.Dialect.ParseTableName(tableName);
         }
     }
 }

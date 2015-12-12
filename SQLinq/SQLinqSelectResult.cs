@@ -1,14 +1,20 @@
-﻿//Copyright (c) Chris Pietschmann 2013 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
 using System.Collections.Generic;
-using System.Text;
 
 namespace SQLinq
 {
     public class SQLinqSelectResult : ISQLinqResult
     {
+        public SQLinqSelectResult(ISqlDialect dialect)
+        {
+            this.Dialect = dialect;
+        }
+
+        public ISqlDialect Dialect { get; private set; }
+
         public string[] Select { get; set; }
         public bool? Distinct { get; set; }
         public int? Take { get; set; }
@@ -27,7 +33,7 @@ namespace SQLinq
         /// <returns></returns>
         public string ToQuery()
         {
-            return DialectProvider.Dialect.ToQuery(this);
+            return this.Dialect.ToQuery(this);
         }
     }
 }

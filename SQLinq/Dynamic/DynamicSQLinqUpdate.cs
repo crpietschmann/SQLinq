@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2013 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -12,12 +12,19 @@ namespace SQLinq.Dynamic
     public class DynamicSQLinqUpdate : ISQLinqUpdate
     {
         public DynamicSQLinqUpdate(IDictionary<string, object> data, string tableName)
+            : this(DialectProvider.Create(), data, tableName)
+        { }
+
+        public DynamicSQLinqUpdate(ISqlDialect dialect, IDictionary<string, object> data, string tableName)
         {
+            this.Dialect = dialect;
             this.Table = tableName;
             this.Data = data;
 
-            this.WhereClauses = new DynamicSQLinqExpressionCollection();
+            this.WhereClauses = new DynamicSQLinqExpressionCollection(dialect);
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         public string Table { get; set; }
         public IDictionary<string, object> Data { get; set; }
@@ -43,7 +50,7 @@ namespace SQLinq.Dynamic
         /// <returns>The DynamicSQLinq instance to allow for method chaining.</returns>
         public DynamicSQLinqUpdate Where(string clause, params object[] parameters)
         {
-            this.WhereClauses.Add(new DynamicSQLinqExpression(clause, parameters));
+            this.WhereClauses.Add(new DynamicSQLinqExpression(this.Dialect, clause, parameters));
             return this;
         }
 
@@ -56,7 +63,7 @@ namespace SQLinq.Dynamic
         /// <returns>The DynamicSQLinq instance to allow for method chaining.</returns>
         public DynamicSQLinqUpdate Where<T>(string fieldName, Expression<Func<T, bool>> expression)
         {
-            this.WhereClauses.Add(new DynamicSQLinqLambdaExpression<T>(fieldName, expression));
+            this.WhereClauses.Add(new DynamicSQLinqLambdaExpression<T>(this.Dialect, fieldName, expression));
             return this;
         }
 
@@ -71,7 +78,7 @@ namespace SQLinq.Dynamic
             {
                 var fieldName = item.Key;
                 var parameterValue = item.Value;
-                var parameterName = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
+                var parameterName = this.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
 
                 fields.Add(fieldName, parameterName);
                 parameters.Add(parameterName, parameterValue);
@@ -82,7 +89,7 @@ namespace SQLinq.Dynamic
 
             // ****************************************************
             // **** FROM ******************************************
-            var tableName = DialectProvider.Dialect.ParseTableName(this.Table);
+            var tableName = this.Dialect.ParseTableName(this.Table);
 
             // ****************************************************
             // **** WHERE *****************************************
@@ -93,7 +100,7 @@ namespace SQLinq.Dynamic
             }
 
 
-            return new SQLinqUpdateResult
+            return new SQLinqUpdateResult(this.Dialect)
             {
                 Table = tableName,
                 Where = compiledWhere.SQL,

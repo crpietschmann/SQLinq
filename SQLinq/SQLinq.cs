@@ -19,9 +19,32 @@ namespace SQLinq
         /// <typeparam name="T"></typeparam>
         /// <param name="obj">The object that defines the Type to use for creating the SQLinq object instance for.</param>
         /// <returns></returns>
+        public static SQLinq<T> Create<T>(T obj, string tableName, ISqlDialect dialect)
+        {
+            return new SQLinq<T>(tableName, dialect);
+        }
+
+        /// <summary>
+        /// Creates a new SQLinq object for the Type of the object specified.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">The object that defines the Type to use for creating the SQLinq object instance for.</param>
+        /// <returns></returns>
         public static SQLinq<T> Create<T>(T obj, string tableName)
         {
-            return new SQLinq<T>(tableName);
+            // initialize the Default ISqlDialect
+            var dialect = DialectProvider.Create();
+            return Create<T>(obj, tableName);
+        }
+
+        /// <summary>
+        /// Creates a new DynamicSQLinq object for the specified table name.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public static DynamicSQLinq Create(string tableName, ISqlDialect dialect)
+        {
+            return new DynamicSQLinq(dialect, tableName);
         }
 
         /// <summary>
@@ -31,7 +54,19 @@ namespace SQLinq
         /// <returns></returns>
         public static DynamicSQLinq Create(string tableName)
         {
-            return new DynamicSQLinq(tableName);
+            // initialize the Default ISqlDialect
+            var dialect = DialectProvider.Create();
+            return Create(tableName, dialect);
+        }
+
+        /// <summary>
+        /// Creates a new SQLinqInsert object for the specified Object.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static SQLinqInsert<T> Insert<T>(T data, ISqlDialect dialect)
+        {
+            return new SQLinqInsert<T>(data, dialect);
         }
 
         /// <summary>
@@ -41,7 +76,20 @@ namespace SQLinq
         /// <returns></returns>
         public static SQLinqInsert<T> Insert<T>(T data)
         {
-            return new SQLinqInsert<T>(data);
+            // initialize the Default ISqlDialect
+            var dialect = DialectProvider.Create();
+            return Insert<T>(data, dialect);
+        }
+
+        /// <summary>
+        /// Creates a new SQLinqInsert object for the specified Object and table name.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public static SQLinqInsert<T> Insert<T>(T data, string tableName, ISqlDialect dialect)
+        {
+            return new SQLinqInsert<T>(data, tableName, dialect);
         }
 
         /// <summary>
@@ -52,7 +100,19 @@ namespace SQLinq
         /// <returns></returns>
         public static SQLinqInsert<T> Insert<T>(T data, string tableName)
         {
-            return new SQLinqInsert<T>(data, tableName);
+            // initialize the Default ISqlDialect
+            var dialect = DialectProvider.Create();
+            return Insert<T>(data, tableName, dialect);
+        }
+
+        /// <summary>
+        /// Creates a new SQLinqInsert object for the specified Object.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static SQLinqUpdate<T> Update<T>(T data, ISqlDialect dialect)
+        {
+            return new SQLinqUpdate<T>(data, dialect);
         }
 
         /// <summary>
@@ -62,7 +122,20 @@ namespace SQLinq
         /// <returns></returns>
         public static SQLinqUpdate<T> Update<T>(T data)
         {
-            return new SQLinqUpdate<T>(data);
+            // initialize the Default ISqlDialect
+            var dialect = DialectProvider.Create();
+            return Update<T>(data, dialect);
+        }
+
+        /// <summary>
+        /// Creates a new SQLinqInsert object for the specified Object and table name.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public static SQLinqUpdate<T> Update<T>(T data, string tableName, ISqlDialect dialect)
+        {
+            return new SQLinqUpdate<T>(data, tableName, dialect);
         }
 
         /// <summary>
@@ -73,7 +146,9 @@ namespace SQLinq
         /// <returns></returns>
         public static SQLinqUpdate<T> Update<T>(T data, string tableName)
         {
-            return new SQLinqUpdate<T>(data, tableName);
+            // initialize the Default ISqlDialect
+            var dialect = DialectProvider.Create();
+            return Update<T>(data, tableName, dialect);
         }
     }
 
@@ -87,10 +162,18 @@ namespace SQLinq
         /// Creates a new SQLinq object
         /// </summary>
         public SQLinq()
+            : this(DialectProvider.Create())
+        { }
+
+        /// <summary>
+        /// Creates a new SQLinq object
+        /// </summary>
+        public SQLinq(ISqlDialect dialect)
         {
             this.Expressions = new List<Expression>(); //= new List<Expression<Func<T, bool>>>();
             //this.JoinExpressions = new List<ISQLinqJoinExpression>();
             this.OrderByExpressions = new List<OrderByExpression>();
+            this.Dialect = dialect;
         }
 
         /// <summary>
@@ -98,14 +181,22 @@ namespace SQLinq
         /// </summary>
         /// <param name="tableNameOverride">The database table name to use. This explicitly overrides any use of the SQLinqTable attribute.</param>
         public SQLinq(string tableNameOverride)
-            : this()
+            : this(tableNameOverride, DialectProvider.Create())
+        { }
+
+        /// <summary>
+        /// Creates a new SQLinq object
+        /// </summary>
+        /// <param name="tableNameOverride">The database table name to use. This explicitly overrides any use of the SQLinqTable attribute.</param>
+        public SQLinq(string tableNameOverride, ISqlDialect dialect)
+            : this(dialect)
         {
             this.TableNameOverride = tableNameOverride;
         }
 
         public string TableNameOverride { get; private set; }
 
-
+        public ISqlDialect Dialect { get; private set; }
 
         //public List<Expression<Func<T, bool>>> Expressions { get; private set; }
         public List<Expression> Expressions { get; private set; }
@@ -155,7 +246,7 @@ namespace SQLinq
         /// <returns>The SQLinq instance to allow for method chaining.</returns>
         public SQLinq<T> Skip(int skip)
         {
-            DialectProvider.Dialect.AssertSkip(this);
+            this.Dialect.AssertSkip(this);
 
             this.SkipRecords = skip;
             return this;
@@ -322,7 +413,7 @@ namespace SQLinq
                 //}
             }
 
-            tableName = DialectProvider.Dialect.ParseTableName(tableName);
+            tableName = this.Dialect.ParseTableName(tableName);
 
             //if (tableAsName != null)
             //{
@@ -383,7 +474,7 @@ namespace SQLinq
             var orderbyResult = this.ToSQL_OrderBy(_parameterNumber, parameterNamePrefix, parameters);
             _parameterNumber = existingParameterCount + parameters.Count;
 
-            return new SQLinqSelectResult
+            return new SQLinqSelectResult(this.Dialect)
             {
                 Select = selectResult.Select.ToArray(),
                 Distinct = this.DistinctValue,
@@ -402,7 +493,7 @@ namespace SQLinq
             SqlExpressionCompilerResult whereResult = null;
             if (this.Expressions.Count > 0)
             {
-                whereResult = SqlExpressionCompiler.Compile(parameterNumber, parameterNamePrefix, this.Expressions);
+                whereResult = SqlExpressionCompiler.Compile(this.Dialect, parameterNumber, parameterNamePrefix, this.Expressions);
                 foreach (var item in whereResult.Parameters)
                 {
                     parameters.Add(item.Key, item.Value);
@@ -413,7 +504,7 @@ namespace SQLinq
 
         private SqlExpressionCompilerSelectorResult ToSQL_Select(int parameterNumber, string parameterNamePrefix, IDictionary<string, object> parameters)
         {
-            var selectResult = SqlExpressionCompiler.CompileSelector(parameterNumber, parameterNamePrefix, this.Selector);
+            var selectResult = SqlExpressionCompiler.CompileSelector(this.Dialect, parameterNumber, parameterNamePrefix, this.Selector);
             foreach (var item in selectResult.Parameters)
             {
                 parameters.Add(item.Key, item.Value);
@@ -426,8 +517,8 @@ namespace SQLinq
                 {
                     foreach (var p in props)
                     {
-                        var selectName = SqlExpressionCompiler.GetMemberColumnName(p);
-                        var asName = DialectProvider.Dialect.ParseColumnName(p.Name);
+                        var selectName = SqlExpressionCompiler.GetMemberColumnName(p, this.Dialect);
+                        var asName = this.Dialect.ParseColumnName(p.Name);
                         if (selectName == asName)
                         {
                             selectResult.Select.Add(selectName);
@@ -452,7 +543,7 @@ namespace SQLinq
 
             for (var i = 0; i < this.OrderByExpressions.Count; i++)
             {
-                var r = SqlExpressionCompiler.CompileSelector(parameterNumber, parameterNamePrefix, this.OrderByExpressions[i].Expression);
+                var r = SqlExpressionCompiler.CompileSelector(this.Dialect, parameterNumber, parameterNamePrefix, this.OrderByExpressions[i].Expression);
                 foreach (var s in r.Select)
                 {
                     orderbyResult.Select.Add(s);

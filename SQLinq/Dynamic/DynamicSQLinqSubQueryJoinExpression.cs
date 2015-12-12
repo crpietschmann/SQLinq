@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2012 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -19,7 +19,18 @@ namespace SQLinq.Dynamic
         /// <param name="clause">The Join clause</param>
         /// <param name="parameters">Any parameters necessary for the Join clause</param>
         public DynamicSQLinqSubQueryJoinExpression(ISQLinq query, string alias, string clause, params object[] parameters)
-            : this(query, alias, DynamicSQLinqJoinOperator.Inner, clause, parameters)
+            : this(DialectProvider.Create(), query, alias, DynamicSQLinqJoinOperator.Inner, clause, parameters)
+        { }
+
+        /// <summary>
+        /// Creates a new DynamicSQLinqSubQueryJoinExpression instance with the JoinOperator set to DynamicSQLinqJoinOperator.Inner ("INNER JOIN")
+        /// </summary>
+        /// <param name="query">The sub-query that will be joined</param>
+        /// <param name="alias">The Alias to give the sub-query within the main query</param>
+        /// <param name="clause">The Join clause</param>
+        /// <param name="parameters">Any parameters necessary for the Join clause</param>
+        public DynamicSQLinqSubQueryJoinExpression(ISqlDialect dialect, ISQLinq query, string alias, string clause, params object[] parameters)
+            : this(dialect, query, alias, DynamicSQLinqJoinOperator.Inner, clause, parameters)
         { }
 
         /// <summary>
@@ -30,14 +41,17 @@ namespace SQLinq.Dynamic
         /// <param name="joinOperator">The JOIN operator</param>
         /// <param name="clause">The Join clause</param>
         /// <param name="parameters">Any parameters necessary for the Join clause</param>
-        public DynamicSQLinqSubQueryJoinExpression(ISQLinq query, string alias, DynamicSQLinqJoinOperator joinOperator, string clause, params object[] parameters)
+        public DynamicSQLinqSubQueryJoinExpression(ISqlDialect dialect, ISQLinq query, string alias, DynamicSQLinqJoinOperator joinOperator, string clause, params object[] parameters)
         {
+            this.Dialect = dialect;
             this.Query = query;
             this.Alias = alias;
             this.JoinOperator = joinOperator;
             this.Clause = clause;
             this.Parameters = parameters;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         public ISQLinq Query { get; set; }
         public string Alias { get; set; }
@@ -66,8 +80,8 @@ namespace SQLinq.Dynamic
             for (var i = 0; i < this.Parameters.Length; i++)
             {
                 existingParameterCount++;
-                var key = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + existingParameterCount;
-                clause = clause.Replace(DialectProvider.Dialect.ParameterPrefix + i, key);
+                var key = this.Dialect.ParameterPrefix + parameterNamePrefix + existingParameterCount;
+                clause = clause.Replace(this.Dialect.ParameterPrefix + i, key);
                 parameters.Add(key, this.Parameters[i]);
             }
 

@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2012 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -18,7 +18,17 @@ namespace SQLinq.Dynamic
         /// <param name="clause">The Join clause</param>
         /// <param name="parameters">Any parameters necessary for the Join clause</param>
         public DynamicSQLinqJoinExpression(string tableName, string clause, object[] parameters)
-            : this(tableName, DynamicSQLinqJoinOperator.Inner, clause, parameters)
+            : this(DialectProvider.Create(), tableName, clause, parameters)
+        { }
+
+        /// <summary>
+        /// Creates a new DynamicSQLinqJoinExpression instance with the JoinOperator set to DynamicSQLinqJoinOperator.Inner ("INNER JOIN")
+        /// </summary>
+        /// <param name="tableName">The database Table / View to Join</param>
+        /// <param name="clause">The Join clause</param>
+        /// <param name="parameters">Any parameters necessary for the Join clause</param>
+        public DynamicSQLinqJoinExpression(ISqlDialect dialect, string tableName, string clause, object[] parameters)
+            : this(dialect, tableName, DynamicSQLinqJoinOperator.Inner, clause, parameters)
         { }
 
         /// <summary>
@@ -28,13 +38,16 @@ namespace SQLinq.Dynamic
         /// <param name="joinOperator">The JOIN operator</param>
         /// <param name="clause">The Join clause</param>
         /// <param name="parameters">Any parameter values necessary for the Join clause</param>
-        public DynamicSQLinqJoinExpression(string tableName, DynamicSQLinqJoinOperator joinOperator, string clause, object[] parameters)
+        public DynamicSQLinqJoinExpression(ISqlDialect dialect, string tableName, DynamicSQLinqJoinOperator joinOperator, string clause, object[] parameters)
         {
+            this.Dialect = dialect;
             this.Table = tableName;
             this.JoinOperator = joinOperator;
             this.Clause = clause;
             this.Parameters = parameters;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         /// <summary>
         /// The database Table / View to Join
@@ -69,8 +82,8 @@ namespace SQLinq.Dynamic
             for (var i = 0; i < this.Parameters.Length; i++)
             {
                 existingParameterCount++;
-                var key = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + existingParameterCount;
-                clause = clause.Replace(DialectProvider.Dialect.ParameterPrefix + i, key);
+                var key = this.Dialect.ParameterPrefix + parameterNamePrefix + existingParameterCount;
+                clause = clause.Replace(this.Dialect.ParameterPrefix + i, key);
                 parameters.Add(key, this.Parameters[i]);
             }
 

@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2012 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -12,13 +12,24 @@ namespace SQLinq.Dynamic
     public class DynamicSQLinqExpressionCollection : List<IDynamicSQLinqExpression>, IDynamicSQLinqExpression
     {
         public DynamicSQLinqExpressionCollection()
-            : this(DynamicSQLinqWhereOperator.And)
+            : this(DialectProvider.Create())
+        { }
+
+        public DynamicSQLinqExpressionCollection(ISqlDialect dialect)
+            : this(dialect, DynamicSQLinqWhereOperator.And)
         { }
 
         public DynamicSQLinqExpressionCollection(DynamicSQLinqWhereOperator whereOperator)
+            : this(DialectProvider.Create(), whereOperator)
+        { }
+
+        public DynamicSQLinqExpressionCollection(ISqlDialect dialect, DynamicSQLinqWhereOperator whereOperator)
         {
+            this.Dialect = dialect;
             this.WhereOperator = whereOperator;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         public DynamicSQLinqWhereOperator WhereOperator { get; set; }
 
@@ -74,7 +85,7 @@ namespace SQLinq.Dynamic
 
         public DynamicSQLinqExpressionCollection Add(string clause, params object[] parameters)
         {
-            this.Add(new DynamicSQLinqExpression(clause, parameters));
+            this.Add(new DynamicSQLinqExpression(this.Dialect, clause, parameters));
             return this;
         }
     }

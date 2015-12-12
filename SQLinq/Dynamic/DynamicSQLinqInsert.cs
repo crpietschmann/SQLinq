@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2013 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -10,10 +10,17 @@ namespace SQLinq.Dynamic
     public class DynamicSQLinqInsert : ISQLinqInsert
     {
         public DynamicSQLinqInsert(IDictionary<string, object> data, string tableName)
+            : this(DialectProvider.Create(), data, tableName)
+        { }
+
+        public DynamicSQLinqInsert(ISqlDialect dialect, IDictionary<string, object> data, string tableName)
         {
+            this.Dialect = dialect;
             this.Table = tableName;
             this.Data = data;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         public string Table { get; set; }
         public IDictionary<string, object> Data { get; set; }
@@ -29,7 +36,7 @@ namespace SQLinq.Dynamic
             {
                 var fieldName = item.Key;
                 var parameterValue = item.Value;
-                var parameterName = DialectProvider.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
+                var parameterName = this.Dialect.ParameterPrefix + parameterNamePrefix + _parameterNumber.ToString();
 
                 fields.Add(fieldName, parameterName);
                 parameters.Add(parameterName, parameterValue);
@@ -37,7 +44,7 @@ namespace SQLinq.Dynamic
                 _parameterNumber++;
             }
 
-            return new SQLinqInsertResult
+            return new SQLinqInsertResult(this.Dialect)
             {
                 Table = this.Table,
                 Fields = fields,

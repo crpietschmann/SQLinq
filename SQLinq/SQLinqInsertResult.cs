@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2013 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -10,6 +10,17 @@ namespace SQLinq
 {
     public class SQLinqInsertResult : ISQLinqResult
     {
+        public SQLinqInsertResult()
+            : this(DialectProvider.Create())
+        { }
+
+        public SQLinqInsertResult(ISqlDialect dialect)
+        {
+            this.Dialect = dialect;
+        }
+
+        public ISqlDialect Dialect { get; private set; }
+
         public string Table { get; set; }
 
         public Dictionary<string, string> Fields { get; set; }
@@ -47,7 +58,7 @@ namespace SQLinq
                     isFirst = false;
                 }
 
-                fieldList.Append(DialectProvider.Dialect.ParseColumnName(f.Key));
+                fieldList.Append(this.Dialect.ParseColumnName(f.Key));
 
                 parameterList.Append(f.Value);
             }

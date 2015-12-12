@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2012 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -15,21 +15,28 @@ namespace SQLinq.Compiler
     {
         public const string DefaultParameterNamePrefix = "sqlinq_";
 
-        public static SqlExpressionCompilerResult Compile(int existingParameterCount, string parameterNamePrefix, IEnumerable<Expression> expressions)
+        public static SqlExpressionCompilerResult Compile(ISqlDialect dialect, int existingParameterCount, string parameterNamePrefix, IEnumerable<Expression> expressions)
         {
-            return new SqlExpressionCompiler(existingParameterCount, parameterNamePrefix).Compile(expressions);
+            return new SqlExpressionCompiler(dialect, existingParameterCount, parameterNamePrefix).Compile(expressions);
         }
 
-        public static SqlExpressionCompilerSelectorResult CompileSelector(int existingParameterCount, string parameterNamePrefix, Expression expression)
+        public static SqlExpressionCompilerSelectorResult CompileSelector(ISqlDialect dialect, int existingParameterCount, string parameterNamePrefix, Expression expression)
         {
-            return new SqlExpressionCompiler(existingParameterCount, parameterNamePrefix).CompileSelector(expression);
+            return new SqlExpressionCompiler(dialect, existingParameterCount, parameterNamePrefix).CompileSelector(expression);
         }
 
         public SqlExpressionCompiler(int existingParameterCount = 0, string parameterNamePrefix = DefaultParameterNamePrefix)
+            : this(DialectProvider.Create(), existingParameterCount, parameterNamePrefix)
+        { }
+
+        public SqlExpressionCompiler(ISqlDialect dialect, int existingParameterCount = 0, string parameterNamePrefix = DefaultParameterNamePrefix)
         {
             this.ExistingParameterCount = existingParameterCount;
             this.ParameterNamePrefix = parameterNamePrefix;
+            this.Dialect = dialect;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         public int ExistingParameterCount { get; set; }
         public string ParameterNamePrefix { get; set; }
@@ -65,7 +72,7 @@ namespace SQLinq.Compiler
                 }
                 isFirstWhere = false;
 
-                sb.Append(ProcessExpression(e, e, result.Parameters, this.GetParameterName));
+                sb.Append(ProcessExpression(this.Dialect, e, e, result.Parameters, this.GetParameterName));
             }
             result.SQL = sb.ToString();
 
@@ -85,7 +92,7 @@ namespace SQLinq.Compiler
 
             foreach (var e in expressions)
             {
-                ProcessSelector(e, e, result.Select, result.Parameters, this.GetParameterName);
+                ProcessSelector(this.Dialect, e, e, result.Select, result.Parameters, this.GetParameterName);
             }
 
             return result;
@@ -98,7 +105,7 @@ namespace SQLinq.Compiler
         private string GetParameterName()
         {
             this.ExistingParameterCount++;
-            return DialectProvider.Dialect.ParameterPrefix + this.ParameterNamePrefix + this.ExistingParameterCount.ToString();
+            return this.Dialect.ParameterPrefix + this.ParameterNamePrefix + this.ExistingParameterCount.ToString();
         }
 
         //private string ProcessExpression(Expression expression, IDictionary<string, object> parameters)
@@ -110,7 +117,7 @@ namespace SQLinq.Compiler
 
         #region Private Static Methods
 
-        static void ProcessSelector(Expression rootExpression, Expression e, IList<string> select, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static void ProcessSelector(ISqlDialect dialect, Expression rootExpression, Expression e, IList<string> select, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
             if (e == null)
             {
@@ -128,7 +135,7 @@ namespace SQLinq.Compiler
 
             if (e.NodeType == ExpressionType.Lambda)
             {
-                ProcessSelector(rootExpression, ((LambdaExpression)e).Body, select, parameters, getParameterName);
+                ProcessSelector(dialect, rootExpression, ((LambdaExpression)e).Body, select, parameters, getParameterName);
             }
             else if (e.NodeType == ExpressionType.New)
             {
@@ -137,8 +144,8 @@ namespace SQLinq.Compiler
                 for (var i = 0; i < len; i++)
                 {
                     var arg = n.Arguments[i];
-                    var field = ProcessExpression(rootExpression, arg, parameters, getParameterName);
-                    var alias = DialectProvider.Dialect.ParseColumnName(n.Members[i].Name);
+                    var field = ProcessExpression(dialect, rootExpression, arg, parameters, getParameterName);
+                    var alias = dialect.ParseColumnName(n.Members[i].Name);
                     if (field == alias)
                     {
                         select.Add(field);
@@ -152,96 +159,96 @@ namespace SQLinq.Compiler
             else if (e.NodeType == ExpressionType.Convert)
             {
                 var u = (UnaryExpression)e;
-                select.Add(ProcessExpression(rootExpression, u.Operand, parameters, getParameterName));
+                select.Add(ProcessExpression(dialect, rootExpression, u.Operand, parameters, getParameterName));
             }
             else if (e.NodeType == ExpressionType.MemberAccess)
             {
-                var s = ProcessSingleSideExpression(rootExpression, e, parameters, getParameterName);
+                var s = ProcessSingleSideExpression(dialect, rootExpression, e, parameters, getParameterName);
                 select.Add(s);
             }
             else if (e.NodeType == ExpressionType.Call)
             {
-                var s = ProcessCallExpression(rootExpression, (MethodCallExpression)e, parameters, getParameterName);
+                var s = ProcessCallExpression(dialect, rootExpression, (MethodCallExpression)e, parameters, getParameterName);
                 select.Add(s);
             }
         }
 
         //http://weblogs.asp.net/mehfuzh/archive/2007/10/04/writing-custom-linq-provider.aspx
-        static string ProcessExpression(Expression rootExpression, Expression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessExpression(ISqlDialect dialect, Expression rootExpression, Expression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
             switch (e.NodeType)
             {
                 case ExpressionType.Equal:
-                    return ProcessEqualExpression(rootExpression, (BinaryExpression)e, parameters, getParameterName);
+                    return ProcessEqualExpression(dialect, rootExpression, (BinaryExpression)e, parameters, getParameterName);
 
                 case ExpressionType.GreaterThan:
-                    return ProcessGreaterThanExpression(rootExpression, (BinaryExpression)e, parameters, getParameterName);
+                    return ProcessGreaterThanExpression(dialect, rootExpression, (BinaryExpression)e, parameters, getParameterName);
 
                 case ExpressionType.GreaterThanOrEqual:
-                    return ProcessGreaterThanOrEqualExpression(rootExpression, (BinaryExpression)e, parameters, getParameterName);
+                    return ProcessGreaterThanOrEqualExpression(dialect, rootExpression, (BinaryExpression)e, parameters, getParameterName);
 
                 case ExpressionType.LessThan:
-                    return ProcessLessThanExpression(rootExpression, (BinaryExpression)e, parameters, getParameterName);
+                    return ProcessLessThanExpression(dialect, rootExpression, (BinaryExpression)e, parameters, getParameterName);
 
                 case ExpressionType.LessThanOrEqual:
-                    return ProcessLessThanOrEqualExpression(rootExpression, (BinaryExpression)e, parameters, getParameterName);
+                    return ProcessLessThanOrEqualExpression(dialect, rootExpression, (BinaryExpression)e, parameters, getParameterName);
 
                 case ExpressionType.NotEqual:
                     //var nee = (BinaryExpression)e;
                     //return string.Format("({0} <> {1})", ProcessExpression(rootExpression, nee.Left, parameters, getParameterName), ProcessExpression(rootExpression, nee.Right, parameters, getParameterName));
-                    return ProcessNotEqualExpression(rootExpression, (BinaryExpression)e, parameters, getParameterName);
+                    return ProcessNotEqualExpression(dialect, rootExpression, (BinaryExpression)e, parameters, getParameterName);
 
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
                     var aae = (BinaryExpression)e;
-                    return string.Format("({0} AND {1})", ProcessExpression(rootExpression, aae.Left, parameters, getParameterName), ProcessExpression(rootExpression, aae.Right, parameters, getParameterName));
-
+                    return string.Format("({0} AND {1})", ProcessExpression(dialect, rootExpression, aae.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, aae.Right, parameters, getParameterName));
+                    
                 case ExpressionType.Or:
                 case ExpressionType.OrElse:
                     var oee = (BinaryExpression)e;
-                    return string.Format("({0} OR {1})", ProcessExpression(rootExpression, oee.Left, parameters, getParameterName), ProcessExpression(rootExpression, oee.Right, parameters, getParameterName));
+                    return string.Format("({0} OR {1})", ProcessExpression(dialect, rootExpression, oee.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, oee.Right, parameters, getParameterName));
 
                 case ExpressionType.Add:
                     var ae = (BinaryExpression)e;
-                    return string.Format("({0} + {1})", ProcessExpression(rootExpression, ae.Left, parameters, getParameterName), ProcessExpression(rootExpression, ae.Right, parameters, getParameterName));
+                    return string.Format("({0} + {1})", ProcessExpression(dialect, rootExpression, ae.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, ae.Right, parameters, getParameterName));
 
                 case ExpressionType.Subtract:
                     var se = (BinaryExpression)e;
-                    return string.Format("({0} - {1})", ProcessExpression(rootExpression, se.Left, parameters, getParameterName), ProcessExpression(rootExpression, se.Right, parameters, getParameterName));
+                    return string.Format("({0} - {1})", ProcessExpression(dialect, rootExpression, se.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, se.Right, parameters, getParameterName));
 
                 case ExpressionType.Multiply:
                     var me = (BinaryExpression)e;
-                    return string.Format("({0} * {1})", ProcessExpression(rootExpression, me.Left, parameters, getParameterName), ProcessExpression(rootExpression, me.Right, parameters, getParameterName));
+                    return string.Format("({0} * {1})", ProcessExpression(dialect, rootExpression, me.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, me.Right, parameters, getParameterName));
 
                 case ExpressionType.Divide:
                     var de = (BinaryExpression)e;
-                    return string.Format("({0} / {1})", ProcessExpression(rootExpression, de.Left, parameters, getParameterName), ProcessExpression(rootExpression, de.Right, parameters, getParameterName));
+                    return string.Format("({0} / {1})", ProcessExpression(dialect, rootExpression, de.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, de.Right, parameters, getParameterName));
 
                 case ExpressionType.Modulo:
                     var moduloe = (BinaryExpression)e;
-                    return string.Format("({0} % {1})", ProcessExpression(rootExpression, moduloe.Left, parameters, getParameterName), ProcessExpression(rootExpression, moduloe.Right, parameters, getParameterName));
+                    return string.Format("({0} % {1})", ProcessExpression(dialect, rootExpression, moduloe.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, moduloe.Right, parameters, getParameterName));
 
                 case ExpressionType.Lambda:
-                    return ProcessExpression(rootExpression, ((LambdaExpression)e).Body, parameters, getParameterName);
+                    return ProcessExpression(dialect, rootExpression, ((LambdaExpression)e).Body, parameters, getParameterName);
 
                 case ExpressionType.Call:
-                    return ProcessCallExpression(rootExpression, (MethodCallExpression)e, parameters, getParameterName);
+                    return ProcessCallExpression(dialect, rootExpression, (MethodCallExpression)e, parameters, getParameterName);
 
                 case ExpressionType.Convert:
                     var u = (UnaryExpression)e;
-                    return ProcessExpression(rootExpression, u.Operand, parameters, getParameterName);
+                    return ProcessExpression(dialect, rootExpression, u.Operand, parameters, getParameterName);
 
                 default:
                     //if (e.NodeType == ExpressionType.MemberAccess)
                     //{
-                    return ProcessSingleSideExpression(rootExpression, e, parameters, getParameterName);
+                    return ProcessSingleSideExpression(dialect, rootExpression, e, parameters, getParameterName);
                 //}
 
                 //throw new Exception("Unrecognized NodeType (" + e.NodeType.ToString() + ")");
             }
         }
 
-        static string ProcessCallExpression(Expression rootExpression, MethodCallExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessCallExpression(ISqlDialect dialect, Expression rootExpression, MethodCallExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
             var method = e.Method;
             string memberName = null;
@@ -259,7 +266,7 @@ namespace SQLinq.Compiler
             {
                 // Get Column Name to Use
                 var member = (MemberInfo)((dynamic)e.Object).Member;
-                memberName = GetMemberColumnName(member);
+                memberName = GetMemberColumnName(member, dialect);
             }
 
 
@@ -283,11 +290,11 @@ namespace SQLinq.Compiler
                 string secondParameterName = null;
                 if (e.Arguments.Count > 0)
                 {
-                    parameterName = GetExpressionValue(rootExpression, e.Arguments[0], parameters, getParameterName);
+                    parameterName = GetExpressionValue(dialect, rootExpression, e.Arguments[0], parameters, getParameterName);
 
                     if (e.Arguments.Count > 1)
                     {
-                        secondParameterName = GetExpressionValue(rootExpression, e.Arguments[1], parameters, getParameterName);
+                        secondParameterName = GetExpressionValue(dialect, rootExpression, e.Arguments[1], parameters, getParameterName);
                     }
                 }
 
@@ -337,10 +344,10 @@ namespace SQLinq.Compiler
                 throw new Exception("Unsupported Method Declaring Type (" + method.DeclaringType.Name + ")");
         }
 
-        static string ProcessBinaryExpression(string sqlOperator, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessBinaryExpression(ISqlDialect dialect, string sqlOperator, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
-            var left = ProcessSingleSideExpression(rootExpression, e.Left, parameters, getParameterName);
-            var right = ProcessSingleSideExpression(rootExpression, e.Right, parameters, getParameterName);
+            var left = ProcessSingleSideExpression(dialect, rootExpression, e.Left, parameters, getParameterName);
+            var right = ProcessSingleSideExpression(dialect, rootExpression, e.Right, parameters, getParameterName);
             
             var op = sqlOperator;
             if (right == "NULL")
@@ -358,37 +365,37 @@ namespace SQLinq.Compiler
             return string.Format("{1} {0} {2}", op, left, right);
         }
 
-        static string ProcessLessThanOrEqualExpression(Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessLessThanOrEqualExpression(ISqlDialect dialect, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
-            return ProcessBinaryExpression("<=", rootExpression, e, parameters, getParameterName);
+            return ProcessBinaryExpression(dialect, "<=", rootExpression, e, parameters, getParameterName);
         }
 
-        static string ProcessLessThanExpression(Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessLessThanExpression(ISqlDialect dialect, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
-            return ProcessBinaryExpression("<", rootExpression, e, parameters, getParameterName);
+            return ProcessBinaryExpression(dialect, "<", rootExpression, e, parameters, getParameterName);
         }
 
-        static string ProcessGreaterThanOrEqualExpression(Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessGreaterThanOrEqualExpression(ISqlDialect dialect, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
-            return ProcessBinaryExpression(">=", rootExpression, e, parameters, getParameterName);
+            return ProcessBinaryExpression(dialect, ">=", rootExpression, e, parameters, getParameterName);
         }
 
-        static string ProcessGreaterThanExpression(Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessGreaterThanExpression(ISqlDialect dialect, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
-            return ProcessBinaryExpression(">", rootExpression, e, parameters, getParameterName);
+            return ProcessBinaryExpression(dialect, ">", rootExpression, e, parameters, getParameterName);
         }
 
-        static string ProcessEqualExpression(Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessEqualExpression(ISqlDialect dialect, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
-            return ProcessBinaryExpression("=", rootExpression, e, parameters, getParameterName);
+            return ProcessBinaryExpression(dialect, "=", rootExpression, e, parameters, getParameterName);
         }
 
-        static string ProcessNotEqualExpression(Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessNotEqualExpression(ISqlDialect dialect, Expression rootExpression, BinaryExpression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
-            return ProcessBinaryExpression("<>", rootExpression, e, parameters, getParameterName);
+            return ProcessBinaryExpression(dialect, "<>", rootExpression, e, parameters, getParameterName);
         }
 
-        internal static string GetMemberColumnName(MemberInfo p)
+        internal static string GetMemberColumnName(MemberInfo p, ISqlDialect dialect)
         {
             string retVal = p.Name;
 
@@ -403,7 +410,7 @@ namespace SQLinq.Compiler
                 }
             }
 
-            return DialectProvider.Dialect.ParseColumnName(retVal);
+            return dialect.ParseColumnName(retVal);
         }
 
         /// <summary>
@@ -455,7 +462,7 @@ namespace SQLinq.Compiler
             return e;
         }
 
-        static string ProcessSingleSideExpression(Expression rootExpression, Expression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string ProcessSingleSideExpression(ISqlDialect dialect, Expression rootExpression, Expression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
             switch (e.NodeType)
             {
@@ -464,14 +471,14 @@ namespace SQLinq.Compiler
                     return "{FieldName}";
 
                 case ExpressionType.Constant:
-                    var val = GetExpressionValue(rootExpression, e, parameters, getParameterName);
+                    var val = GetExpressionValue(dialect, rootExpression, e, parameters, getParameterName);
                     return val.ToString();
 
                 case ExpressionType.MemberAccess:
                     var dynExpr = ((dynamic)e).Expression;
                     if (dynExpr is ConstantExpression)
                     {
-                        return GetExpressionValue(rootExpression, e, parameters, getParameterName);
+                        return GetExpressionValue(dialect, rootExpression, e, parameters, getParameterName);
                     }
                     if (dynExpr is MethodCallExpression)
                     {
@@ -497,12 +504,12 @@ namespace SQLinq.Compiler
                         {
                             // A property of an object is being used as a query parameter
                             // This isn't the object that represents a column in the database
-                            return GetExpressionValue(rootExpression, e, parameters, getParameterName);
+                            return GetExpressionValue(dialect, rootExpression, e, parameters, getParameterName);
                         }
 
 
                         // //////// Get Column Name to Use
-                        var memberName = GetMemberColumnName(d.Member);
+                        var memberName = GetMemberColumnName(d.Member, dialect);
                         string methodName = null;
 
                         PropertyInfo pi = null;
@@ -528,7 +535,7 @@ namespace SQLinq.Compiler
                                 if (memberName.ToLower() == "[length]")
                                 {
                                     methodName = "LEN";
-                                    memberName = GetMemberColumnName(pi);
+                                    memberName = GetMemberColumnName(pi, dialect);
                                 }
                             }
                         }
@@ -554,7 +561,7 @@ namespace SQLinq.Compiler
                         if (addTableAlias)
                         {
                             // Get Table / View Name to Use
-                            var tableName = DialectProvider.Dialect.ParseTableName(d.Expression.Name as String);
+                            var tableName = dialect.ParseTableName(d.Expression.Name as String);
 
                             fullMemberName = string.Format("[{0}].{1}", tableName, memberName);
                         }
@@ -579,24 +586,24 @@ namespace SQLinq.Compiler
                 case ExpressionType.Subtract:
                 case ExpressionType.Divide:
                 case ExpressionType.Modulo:
-                    return ProcessExpression(rootExpression, e, parameters, getParameterName);
+                    return ProcessExpression(dialect, rootExpression, e, parameters, getParameterName);
 
                 case ExpressionType.And:
                 case ExpressionType.Or:
-                    return ProcessExpression(rootExpression, e, parameters, getParameterName);
+                    return ProcessExpression(dialect, rootExpression, e, parameters, getParameterName);
 
                 case ExpressionType.Call:
-                    return ProcessCallExpression(rootExpression, (MethodCallExpression)e, parameters, getParameterName);
+                    return ProcessCallExpression(dialect, rootExpression, (MethodCallExpression)e, parameters, getParameterName);
 
                 case ExpressionType.Convert:
-                    return ProcessExpression(rootExpression, (UnaryExpression)e, parameters, getParameterName);
+                    return ProcessExpression(dialect, rootExpression, (UnaryExpression)e, parameters, getParameterName);
 
                 default:
                     throw new Exception("Unrecognized NodeType (" + e.NodeType.ToString() + ")");
             }
         }
 
-        static string GetExpressionValue(Expression rootExpression, Expression e, IDictionary<string, object> parameters, Func<string> getParameterName)
+        static string GetExpressionValue(ISqlDialect dialect, Expression rootExpression, Expression e, IDictionary<string, object> parameters, Func<string> getParameterName)
         {
             var de = (dynamic)e;
 
@@ -621,7 +628,7 @@ namespace SQLinq.Compiler
                 if (val != null)
                 {
                     var id = getParameterName();
-                    parameters.Add(id, DialectProvider.Dialect.ConvertParameterValue(val));
+                    parameters.Add(id, dialect.ConvertParameterValue(val));
                     return id;
                 }
                 
@@ -675,7 +682,7 @@ namespace SQLinq.Compiler
                 else
                 {
                     var id = getParameterName();
-                    parameters.Add(id, DialectProvider.Dialect.ConvertParameterValue(val));
+                    parameters.Add(id, dialect.ConvertParameterValue(val));
                     return id;
                 }
             }
@@ -694,7 +701,7 @@ namespace SQLinq.Compiler
                 else
                 {
                     var id = getParameterName();
-                    parameters.Add(id, DialectProvider.Dialect.ConvertParameterValue(val));
+                    parameters.Add(id, dialect.ConvertParameterValue(val));
                     return id;
                 }
             }

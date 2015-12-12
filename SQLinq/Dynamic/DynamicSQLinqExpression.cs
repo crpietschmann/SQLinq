@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2012 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -11,10 +11,17 @@ namespace SQLinq.Dynamic
     public class DynamicSQLinqExpression : IDynamicSQLinqExpression
     {
         public DynamicSQLinqExpression(string clause, params object[] args)
+            : this(DialectProvider.Create(), clause, args)
+        { }
+
+        public DynamicSQLinqExpression(ISqlDialect dialect, string clause, params object[] args)
         {
             this.Clause = clause;
             this.Parameters = args;
+            this.Dialect = dialect;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         public string Clause { get; set; }
         public object[] Parameters { get; set; }
@@ -32,9 +39,9 @@ namespace SQLinq.Dynamic
             for (var i = 0; i < this.Parameters.Length; i++)
             {
                 existingParameterCount++;
-                var paramName = string.Format("{0}{1}{2}", DialectProvider.Dialect.ParameterPrefix, parameterNamePrefix, existingParameterCount.ToString());
+                var paramName = string.Format("{0}{1}{2}", this.Dialect.ParameterPrefix, parameterNamePrefix, existingParameterCount.ToString());
 
-                sql = sql.Replace(DialectProvider.Dialect.ParameterPrefix + i, paramName);
+                sql = sql.Replace(this.Dialect.ParameterPrefix + i, paramName);
                 parameters.Add(paramName, this.Parameters[i]);
             }
 

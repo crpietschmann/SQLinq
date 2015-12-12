@@ -3,15 +3,15 @@
   <metadata>
     <id>SQLinq</id>
     <title>SQLinq</title>
-    <version>3.0.1-b4</version>
+    <version>3.0.2-b4</version>
     <authors>Chris Pietschmann</authors>
     <owners>Chris Pietschmann</owners>
-    <licenseUrl>http://sqlinq.codeplex.com/license</licenseUrl>
-    <projectUrl>http://sqlinq.codeplex.com</projectUrl>
+    <licenseUrl>https://github.com/crpietschmann/SQLinq/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/crpietschmann/SQLinq</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Easily generate ad-hoc SQL code using LINQ in a strongly typed manner that allows for compile time validation of you sql scripts.</description>
     <releaseNotes>http://sqlinq.codeplex.com/releases</releaseNotes>
-    <copyright>Copyright (c) 2013 Chris Pietschmann</copyright>
+    <copyright>Copyright (c) 2015 Chris Pietschmann</copyright>
     <tags>sql dal adhoc generation linq database</tags>
   </metadata>
 </package>

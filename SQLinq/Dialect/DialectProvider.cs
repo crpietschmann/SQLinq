@@ -5,7 +5,17 @@ namespace SQLinq
 {
     public static class DialectProvider
     {
-        public static ISqlDialect Dialect = new SqlServerDialect();
+        public static Type DefaultProviderType = typeof(SqlServerDialect);
+        public static ISqlDialect Create()
+        {
+            return (ISqlDialect)Activator.CreateInstance(DefaultProviderType);
+        }
+
+        public static ISqlDialect Create<T>()
+            where T : ISqlDialect, new()
+        {
+            return new T();
+        }
 
         internal static string ConcatFieldArray(string[] fields)
         {

@@ -1,4 +1,4 @@
-﻿//Copyright (c) Chris Pietschmann 2014 (http://pietschsoft.com)
+﻿//Copyright (c) Chris Pietschmann 2015 (http://pietschsoft.com)
 //Licensed under the GNU Library General Public License (LGPL)
 //License can be found here: http://sqlinq.codeplex.com/license
 
@@ -15,15 +15,23 @@ namespace SQLinq.Dynamic
     public class DynamicSQLinq : ISQLinq
     {
         public DynamicSQLinq(string tableName)
+            : this(DialectProvider.Create(), tableName)
+        { }
+
+        public DynamicSQLinq(ISqlDialect dialect, string tableName)
         {
             this.TableName = tableName;
             this.SelectFields = new List<string>();
             this.JoinClauses = new List<ISQLinqJoinExpression>();
-            this.WhereClauses = new DynamicSQLinqExpressionCollection();
-            this.HavingClauses = new DynamicSQLinqExpressionCollection();
+            this.WhereClauses = new DynamicSQLinqExpressionCollection(dialect);
+            this.HavingClauses = new DynamicSQLinqExpressionCollection(dialect);
             this.GroupByFields = new List<string>();
             this.OrderByFields = new List<string>();
+
+            this.Dialect = dialect;
         }
+
+        public ISqlDialect Dialect { get; private set; }
 
         /// <summary>
         /// The database table/view name to use for the generated query.
@@ -140,7 +148,7 @@ namespace SQLinq.Dynamic
         /// <returns>The DynamicSQLinq instance to allow for method chaining.</returns>
         public DynamicSQLinq Where(string clause, params object[] parameters)
         {
-            this.WhereClauses.Add(new DynamicSQLinqExpression(clause, parameters));
+            this.WhereClauses.Add(new DynamicSQLinqExpression(this.Dialect, clause, parameters));
             return this;
         }
 
@@ -153,7 +161,7 @@ namespace SQLinq.Dynamic
         /// <returns>The DynamicSQLinq instance to allow for method chaining.</returns>
         public DynamicSQLinq Where<T>(string fieldName, Expression<Func<T, bool>> expression)
         {
-            this.WhereClauses.Add(new DynamicSQLinqLambdaExpression<T>(fieldName, expression));
+            this.WhereClauses.Add(new DynamicSQLinqLambdaExpression<T>(this.Dialect, fieldName, expression));
             return this;
         }
 
@@ -165,7 +173,7 @@ namespace SQLinq.Dynamic
         /// <returns>The DynamicSQLinq instance to allow for method chaining.</returns>
         public DynamicSQLinq Having(string clause, params object[] parameters)
         {
-            this.HavingClauses.Add(new DynamicSQLinqExpression(clause, parameters));
+            this.HavingClauses.Add(new DynamicSQLinqExpression(this.Dialect, clause, parameters));
             return this;
         }
 
@@ -178,7 +186,7 @@ namespace SQLinq.Dynamic
         /// <returns>The DynamicSQLinq instance to allow for method chaining.</returns>
         public DynamicSQLinq Having<T>(string fieldName, Expression<Func<T, bool>> expression)
         {
-            this.HavingClauses.Add(new DynamicSQLinqLambdaExpression<T>(fieldName, expression));
+            this.HavingClauses.Add(new DynamicSQLinqLambdaExpression<T>(this.Dialect, fieldName, expression));
             return this;
         }
 
@@ -190,7 +198,7 @@ namespace SQLinq.Dynamic
         /// <returns></returns>
         public DynamicSQLinq Join(string tableName, string clause, params object[] parameters)
         {
-            this.JoinClauses.Add(new DynamicSQLinqJoinExpression(tableName, clause, parameters));
+            this.JoinClauses.Add(new DynamicSQLinqJoinExpression(this.Dialect, tableName, clause, parameters));
             return this;
         }
 
@@ -202,13 +210,13 @@ namespace SQLinq.Dynamic
         /// <returns></returns>
         public DynamicSQLinq Join(string tableName, DynamicSQLinqJoinOperator joinOperator, string clause, params object[] parameters)
         {
-            this.JoinClauses.Add(new DynamicSQLinqJoinExpression(tableName, joinOperator, clause, parameters));
+            this.JoinClauses.Add(new DynamicSQLinqJoinExpression(this.Dialect, tableName, joinOperator, clause, parameters));
             return this;
         }
 
         public DynamicSQLinq Join(ISQLinq subquery, string subqueryAlias, DynamicSQLinqJoinOperator joinOperator, string clause, params object[] parameters)
         {
-            this.JoinClauses.Add(new DynamicSQLinqSubQueryJoinExpression(subquery, subqueryAlias, joinOperator, clause, parameters));
+            this.JoinClauses.Add(new DynamicSQLinqSubQueryJoinExpression(this.Dialect, subquery, subqueryAlias, joinOperator, clause, parameters));
             return this;
         }
 
@@ -286,7 +294,7 @@ namespace SQLinq.Dynamic
         {
             var parameterCount = existingParameterCount;
 
-            var result = new SQLinqSelectResult();
+            var result = new SQLinqSelectResult(this.Dialect);
             result.Parameters = new Dictionary<string, object>();
 
             result.Take = this.TakeCount;
