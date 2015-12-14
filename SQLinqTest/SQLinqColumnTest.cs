@@ -20,6 +20,20 @@ namespace SQLinqTest
         }
 
         [TestMethod]
+        public void UseWithSQLinqSubQuery_Oracle_001()
+        {
+            var dialect = new OracleDialect();
+            var query = new SQLinq<MyTable>(dialect);
+
+            var result = query.ToSQL();
+            var actual = result.ToQuery();
+
+            var expected = "SELECT Identifier AS ID, FullName AS Name FROM (SELECT [Identifier], [FullName] FROM [tblSomeTable]) AS MyTable";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void UseWithSQLinqSubQuery_002()
         {
             var query = from item in new SQLinq<MyTable>()
@@ -30,6 +44,22 @@ namespace SQLinqTest
             var actual = result.ToQuery();
 
             var expected = "SELECT [Identifier] AS [ID], [FullName] AS [Name] FROM (SELECT [Identifier], [FullName] FROM [tblSomeTable]) AS [MyTable] WHERE [FullName] = @sqlinq_1";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void UseWithSQLinqSubQuery_Oracle_002()
+        {
+            var dialect = new OracleDialect();
+            var query = from item in new SQLinq<MyTable>(dialect)
+                        where item.Name == "Chris"
+                        select item;
+
+            var result = query.ToSQL();
+            var actual = result.ToQuery();
+
+            var expected = "SELECT Identifier AS ID, FullName AS Name FROM (SELECT [Identifier], [FullName] FROM [tblSomeTable]) AS MyTable WHERE FullName = :sqlinq_1";
 
             Assert.AreEqual(expected, actual);
         }

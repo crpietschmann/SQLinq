@@ -34,7 +34,7 @@ namespace SQLinq
         {
             // initialize the Default ISqlDialect
             var dialect = DialectProvider.Create();
-            return Create<T>(obj, tableName);
+            return Create<T>(obj, tableName, dialect);
         }
 
         /// <summary>

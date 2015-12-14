@@ -38,6 +38,10 @@ namespace SQLinq
 
         public string ParseColumnName(string columnName)
         {
+            if (columnName.Contains(_Space))
+            {
+                return string.Format("\"\"", columnName);
+            }
             return columnName;
         }
 

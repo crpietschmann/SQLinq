@@ -41,7 +41,15 @@ namespace SQLinq.Dynamic
                 existingParameterCount++;
                 var paramName = string.Format("{0}{1}{2}", this.Dialect.ParameterPrefix, parameterNamePrefix, existingParameterCount.ToString());
 
+                // replace SQL dialect specific parameter name placeholder
                 sql = sql.Replace(this.Dialect.ParameterPrefix + i, paramName);
+
+                // Replace "@0" format placeholder
+                // This allows for this placeholder format, plus SQL dialect specific ones to be supported.
+                // This allows for "@0" to be standardized as the supported parameter name placeholder
+                // regardless of the SQL dialect being used.
+                sql = sql.Replace("@" + i, paramName);
+
                 parameters.Add(paramName, this.Parameters[i]);
             }
 

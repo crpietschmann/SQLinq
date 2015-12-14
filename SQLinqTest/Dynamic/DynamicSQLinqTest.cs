@@ -20,6 +20,15 @@ namespace SQLinqTest.Dynamic
         }
 
         [TestMethod]
+        public void DynamicSQLinq_Oracle_Create_001()
+        {
+            var dialect = new SQLinq.OracleDialect();
+            var expected = "tblPerson";
+            var target = SQLinq.SQLinq.Create(expected, dialect);
+            Assert.AreEqual(expected, target.TableName);
+        }
+
+        [TestMethod]
         public void DynamicSQLinq_Test_001()
         {
             var query = new DynamicSQLinq("Car")
@@ -35,6 +44,44 @@ namespace SQLinqTest.Dynamic
             Assert.AreEqual("Ford", sql.Parameters["@sqlinq_1"]);
             Assert.AreEqual(0, sql.Parameters["@sqlinq_2"]);
             Assert.AreEqual(1, sql.Parameters["@sqlinq_3"]);
+        }
+
+        [TestMethod]
+        public void DynamicSQLinq_Oracle_Test_001_A()
+        {
+            var dialect = new SQLinq.OracleDialect();
+            var query = new DynamicSQLinq(dialect, "Car")
+                            .Where("Make = @0", "Ford")
+                            .Where("Color = @0 OR Color = @1", 0, 1);
+
+            var sql = query.ToSQL();
+
+            var code = sql.ToQuery();
+
+            Assert.AreEqual("SELECT * FROM Car WHERE (Make = :sqlinq_1) AND (Color = :sqlinq_2 OR Color = :sqlinq_3)", code);
+
+            Assert.AreEqual("Ford", sql.Parameters[":sqlinq_1"]);
+            Assert.AreEqual(0, sql.Parameters[":sqlinq_2"]);
+            Assert.AreEqual(1, sql.Parameters[":sqlinq_3"]);
+        }
+
+        [TestMethod]
+        public void DynamicSQLinq_Oracle_Test_001_B()
+        {
+            var dialect = new SQLinq.OracleDialect();
+            var query = new DynamicSQLinq(dialect, "Car")
+                            .Where("Make = :0", "Ford")
+                            .Where("Color = :0 OR Color = :1", 0, 1);
+
+            var sql = query.ToSQL();
+
+            var code = sql.ToQuery();
+
+            Assert.AreEqual("SELECT * FROM Car WHERE (Make = :sqlinq_1) AND (Color = :sqlinq_2 OR Color = :sqlinq_3)", code);
+
+            Assert.AreEqual("Ford", sql.Parameters[":sqlinq_1"]);
+            Assert.AreEqual(0, sql.Parameters[":sqlinq_2"]);
+            Assert.AreEqual(1, sql.Parameters[":sqlinq_3"]);
         }
 
         [TestMethod]
@@ -104,6 +151,62 @@ namespace SQLinqTest.Dynamic
             Assert.AreEqual(0, sql.Parameters["@sqlinq_2"]);
             Assert.AreEqual(1, sql.Parameters["@sqlinq_3"]);
             Assert.AreEqual("Chevrolet", sql.Parameters["@sqlinq_4"]);
+        }
+
+        [TestMethod]
+        public void DynamicSQLinq_Oracle_Test_004_A()
+        {
+            var dialect = new SQLinq.OracleDialect();
+            var where = new DynamicSQLinqExpressionCollection(dialect, DynamicSQLinqWhereOperator.Or);
+            where.Add("Make = :0", "Ford")
+                 .Add("Color = :0 OR Color = :1", 0, 1);
+
+            var where2 = new DynamicSQLinqExpressionCollection(dialect);
+            where2.Add("Make = :0", "Chevrolet");
+
+            where.Add(where2);
+
+            var query = new DynamicSQLinq("Car")
+                            .Where(where);
+
+            var sql = query.ToSQL();
+
+            var code = sql.ToQuery();
+
+            Assert.AreEqual("SELECT * FROM Car WHERE (Make = :sqlinq_1) OR (Color = :sqlinq_2 OR Color = :sqlinq_3) OR (Make = :sqlinq_4)", code);
+
+            Assert.AreEqual("Ford", sql.Parameters[":sqlinq_1"]);
+            Assert.AreEqual(0, sql.Parameters[":sqlinq_2"]);
+            Assert.AreEqual(1, sql.Parameters[":sqlinq_3"]);
+            Assert.AreEqual("Chevrolet", sql.Parameters[":sqlinq_4"]);
+        }
+
+        [TestMethod]
+        public void DynamicSQLinq_Oracle_Test_004_B()
+        {
+            var dialect = new SQLinq.OracleDialect();
+            var where = new DynamicSQLinqExpressionCollection(dialect, DynamicSQLinqWhereOperator.Or);
+            where.Add("Make = @0", "Ford")
+                 .Add("Color = @0 OR Color = @1", 0, 1);
+
+            var where2 = new DynamicSQLinqExpressionCollection(dialect);
+            where2.Add("Make = @0", "Chevrolet");
+
+            where.Add(where2);
+
+            var query = new DynamicSQLinq("Car")
+                            .Where(where);
+
+            var sql = query.ToSQL();
+
+            var code = sql.ToQuery();
+
+            Assert.AreEqual("SELECT * FROM Car WHERE (Make = :sqlinq_1) OR (Color = :sqlinq_2 OR Color = :sqlinq_3) OR (Make = :sqlinq_4)", code);
+
+            Assert.AreEqual("Ford", sql.Parameters[":sqlinq_1"]);
+            Assert.AreEqual(0, sql.Parameters[":sqlinq_2"]);
+            Assert.AreEqual(1, sql.Parameters[":sqlinq_3"]);
+            Assert.AreEqual("Chevrolet", sql.Parameters[":sqlinq_4"]);
         }
 
         [TestMethod]
@@ -199,6 +302,20 @@ namespace SQLinqTest.Dynamic
         }
 
         [TestMethod]
+        public void DynamicSQLinq_Oracle_Test_008()
+        {
+            var dialect = new SQLinq.OracleDialect();
+            var query = new DynamicSQLinq(dialect, "Car")
+                            .Where<string>("Make", d => d == null);
+
+            var sql = query.ToSQL();
+
+            var code = sql.ToQuery();
+
+            Assert.AreEqual("SELECT * FROM Car WHERE Make IS NULL", code);
+        }
+
+        [TestMethod]
         public void DynamicSQLinq_Test_009()
         {
             var query = new DynamicSQLinq("Car")
@@ -209,6 +326,20 @@ namespace SQLinqTest.Dynamic
             var code = sql.ToQuery();
 
             Assert.AreEqual("SELECT * FROM Car WHERE [Make] IS NOT NULL", code);
+        }
+
+        [TestMethod]
+        public void DynamicSQLinq_Oracle_Test_009()
+        {
+            var dialect = new SQLinq.OracleDialect();
+            var query = new DynamicSQLinq(dialect, "Car")
+                            .Where<string>("Make", d => d != null);
+
+            var sql = query.ToSQL();
+
+            var code = sql.ToQuery();
+
+            Assert.AreEqual("SELECT * FROM Car WHERE Make IS NOT NULL", code);
         }
 
         [TestMethod]
