@@ -25,7 +25,7 @@ namespace SQLinq
         }
 
         const string _parameterPrefix = "@";
-        public string ParameterPrefix 
+        public string ParameterPrefix
         {
             get { return _parameterPrefix; }
         }
@@ -47,7 +47,7 @@ namespace SQLinq
                 return string.Format("[{0}]", columnName);
             }
 
-            return columnName;  
+            return columnName;
         }
 
         public string ToQuery(SQLinqSelectResult selectResult)
@@ -159,6 +159,26 @@ namespace SQLinq
             }
 
             return "SELECT " + sb.ToString() + sqlOrderBy;
+        }
+
+        public string ToUpper(string value)
+        {
+            return string.Format("UCASE({0})", value);
+        }
+
+        public string ToLower(string value)
+        {
+            return string.Format("LCASE({0})", value);
+        }
+
+        public string IndexOf(string value, string substring)
+        {
+            return string.Format("CHARINDEX({0}, {1})", substring, value);
+        }
+
+        public string Trim(string value)
+        {
+            return string.Format("LTRIM(RTRIM({0}))", value);
         }
     }
 }

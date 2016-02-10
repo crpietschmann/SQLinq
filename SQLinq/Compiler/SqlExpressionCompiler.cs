@@ -204,7 +204,7 @@ namespace SQLinq.Compiler
                 case ExpressionType.AndAlso:
                     var aae = (BinaryExpression)e;
                     return string.Format("({0} AND {1})", ProcessExpression(dialect, rootExpression, aae.Left, parameters, getParameterName), ProcessExpression(dialect, rootExpression, aae.Right, parameters, getParameterName));
-                    
+
                 case ExpressionType.Or:
                 case ExpressionType.OrElse:
                     var oee = (BinaryExpression)e;
@@ -244,9 +244,9 @@ namespace SQLinq.Compiler
                     //if (e.NodeType == ExpressionType.MemberAccess)
                     //{
                     return ProcessSingleSideExpression(dialect, rootExpression, e, parameters, getParameterName);
-                //}
+                    //}
 
-                //throw new Exception("Unrecognized NodeType (" + e.NodeType.ToString() + ")");
+                    //throw new Exception("Unrecognized NodeType (" + e.NodeType.ToString() + ")");
             }
         }
 
@@ -315,10 +315,10 @@ namespace SQLinq.Compiler
                         return string.Format("{0} LIKE {1}", memberName, parameterName);
 
                     case "toupper":
-                        return string.Format("UCASE({0})", memberName);
+                        return dialect.ToUpper(memberName);
 
                     case "tolower":
-                        return string.Format("LCASE({0})", memberName);
+                        return dialect.ToLower(memberName);
 
                     case "replace":
                         return string.Format("REPLACE({0}, {1}, {2})", memberName, parameterName, secondParameterName);
@@ -334,9 +334,10 @@ namespace SQLinq.Compiler
                         }
 
                     case "indexof":
-                        return string.Format("CHARINDEX({0}, {1})", parameterName, memberName);
+                        return dialect.IndexOf(memberName, parameterName);
+
                     case "trim":
-                        return string.Format("LTRIM(RTRIM({0}))", memberName);
+                        return dialect.Trim(memberName);
 
                     default:
                         throw new Exception("Unsupported Method Name (" + method.Name + ") on String object");
@@ -350,7 +351,7 @@ namespace SQLinq.Compiler
         {
             var left = ProcessSingleSideExpression(dialect, rootExpression, e.Left, parameters, getParameterName);
             var right = ProcessSingleSideExpression(dialect, rootExpression, e.Right, parameters, getParameterName);
-            
+
             var op = sqlOperator;
             if (right == _NULL)
             {
@@ -633,9 +634,9 @@ namespace SQLinq.Compiler
                     parameters.Add(id, dialect.ConvertParameterValue(val));
                     return id;
                 }
-                
+
             }
-                
+
             var ce = (e is ConstantExpression) ? e : de.Expression;
             if (ce.NodeType == ExpressionType.Constant)
             {
