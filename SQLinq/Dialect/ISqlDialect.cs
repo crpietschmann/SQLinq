@@ -12,5 +12,9 @@ namespace SQLinq
         string ParseColumnName(string columnName);
         void AssertSkip<T>(SQLinq<T> sqLinq);
         string ToQuery(SQLinqSelectResult selectResult);
+        string ToUpper(string value);
+        string ToLower(string value);
+        string IndexOf(string value, string substring);
+        string Trim(string value);
     }
 }

@@ -140,5 +140,25 @@ namespace SQLinq
 
             return "SELECT " + sb.ToString() + sqlOrderBy;
         }
+
+        public string ToUpper(string value)
+        {
+            return string.Format("UPPER({0})", value);
+        }
+
+        public string ToLower(string value)
+        {
+            return string.Format("LOWER({0})", value);
+        }
+
+        public string IndexOf(string value, string substring)
+        {
+            return string.Format("INSTR({0}, {1})", value, substring);
+        }
+
+        public string Trim(string value)
+        {
+            return string.Format("TRIM(BOTH FROM {0})", value);
+        }
     }
 }
