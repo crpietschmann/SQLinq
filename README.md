@@ -1,5 +1,5 @@
 # SQLinq
-use LINQ to generate Ad-Hoc SQL Queries
+SQLinq allows yout to use LINQ (Language INtegrated Query) features of .NET to generate Ad-Hoc SQL Queries at runtime.
 
 ## Project Description  
 Easily generate ad-hoc SQL code using LINQ in a strongly typed manner that allows for compile time validation of sql scripts. 
