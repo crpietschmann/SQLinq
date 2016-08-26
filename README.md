@@ -77,7 +77,7 @@ using(IDbConnection con = GetDbConnection())
 {
     con.Open();
     data = con.Query(
-        from p in SQLinq<Person>()
+        from p in new SQLinq<Person>()
         where p.FirstName.StartsWith("C") && p.Age > 21
         orderby p.FirstName
         select p
