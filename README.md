@@ -66,7 +66,7 @@ foreach(var p in sqlParameters)
 
 ## SQLinq.Dapper
 
-SQLinq.Dapper is a small helper library that bridges the gap between SQLinq and [Dapper dot net](http://code.google.com/p/dapper-dot-net/) to allow for queries to be performed more easily.  
+SQLinq.Dapper is a small helper library that bridges the gap between SQLinq and [Dapper dot net](https://github.com/StackExchange/Dapper/) to allow for queries to be performed more easily.  
 
 **SQLinq.Dapper Usage:**  
 Here's a simple example of using SQLinq.Dapper:  

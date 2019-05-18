@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinq", "SQLinq\SQLinq.csproj", "{95AF6DBE-D796-469B-97D1-0C23D664D384}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQLinq", "SQLinq\SQLinq.csproj", "{95AF6DBE-D796-469B-97D1-0C23D664D384}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinqTest", "SQLinqTest\SQLinqTest.csproj", "{953B054F-B55C-4EA1-8A4D-6E9DDB38CC4F}"
 EndProject
@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net", "net", "{1E17E797-A51
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DapperExtensions", "DapperExtensions", "{1DBE9D80-2BCB-4460-953C-C6C0631161A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinq.Dapper", "DapperExtensions\SQLinq.Dapper\SQLinq.Dapper.csproj", "{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQLinq.Dapper", "DapperExtensions\SQLinq.Dapper\SQLinq.Dapper.csproj", "{1F1E8FE0-C6EB-40D5-B79F-2E1FF8C093D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLinq.Dapper.Test", "DapperExtensions\SQLinq.Dapper.Test\SQLinq.Dapper.Test.csproj", "{3F9DE692-FBE8-4D31-A41F-FE2FEB175A53}"
 EndProject
@@ -97,6 +97,9 @@ Global
 		{E85F59BD-719A-4454-A728-A12816A61B7B} = {715B669D-0F60-4C52-8CAB-1050BD208360}
 		{53366D81-F50A-4A65-9C4E-724E75B0DE73} = {A18F3145-788E-46B8-8938-D02B89966652}
 		{AFD80FD5-AE34-4667-9B82-D64BB3F0AA0E} = {C6611665-1E45-427E-B333-F5866DC4DB55}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0A44520F-85FC-4F0D-A5CD-8874A20B14A5}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = SQLinq.vsmdi
