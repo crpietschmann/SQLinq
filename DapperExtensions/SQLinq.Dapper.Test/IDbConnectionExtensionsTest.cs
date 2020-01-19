@@ -22,7 +22,7 @@ namespace SQLinq.Dapper.Test
             //return new SqlConnection("Data Source=.\\SQLExpress;AttachDbFilename=" + folder + "Database1.mdf;Integrated Security=True");
             //return new SqlConnection("Data Source=.\\SQLEXPRESS;AttachDbFilename=" + folder + "Database1.mdf;Integrated Security=True;User Instance=True");
             //return new SqlConnection("Data Source=(LocalDB)\v11.0;AttachDbFilename=" + folder + "Database1.mdf;Integrated Security=True;Connect Timeout=15");
-            return new SqlConnection("Data Source=.;Database=DATABASE1;Integrated Security=True;");
+            return new SqlConnection("Data Source=.\\SQLEXPRESS01;Database=DATABASE1;Integrated Security=True;");
         }
 
         #region Query
