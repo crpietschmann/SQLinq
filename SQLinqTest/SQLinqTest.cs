@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using SQLinq.Dialect;
 
 namespace SQLinqTest
 {
@@ -42,6 +43,30 @@ namespace SQLinqTest
         }
 
         [TestMethod]
+        public void SQLinqTest_Mysql_001()
+        {
+            var query = new SQLinq<Person>(DialectProvider.Create<MySqlDialect>()).Where(d => d.Age == 12);
+
+            var result = (SQLinqSelectResult)query.ToSQL();
+
+            Assert.AreEqual("`Person`", result.Table);
+
+            Assert.AreEqual("`Age` = @sqlinq_1", result.Where);
+
+            Assert.AreEqual(1, result.Parameters.Count);
+            Assert.AreEqual(12, result.Parameters["@sqlinq_1"]);
+
+            Assert.AreEqual(7, result.Select.Length);
+            Assert.AreEqual("`ID`", result.Select[0]);
+            Assert.AreEqual("`FirstName`", result.Select[1]);
+            Assert.AreEqual("`LastName`", result.Select[2]);
+            Assert.AreEqual("`Age`", result.Select[3]);
+            Assert.AreEqual("`[Is_Employed]` AS `IsEmployed`", result.Select[4]);
+            Assert.AreEqual("`ParentID`", result.Select[5]);
+            Assert.AreEqual("`Column With Spaces` AS `ColumnWithSpaces`", result.Select[6]);
+        }
+
+        [TestMethod]
         public void SQLinqTest_002()
         {
             var query = new SQLinq<Person>().Where(d => d.FirstName == "Chris");
@@ -49,6 +74,19 @@ namespace SQLinqTest
             var result = (SQLinqSelectResult)query.ToSQL();
 
             Assert.AreEqual("[FirstName] = @sqlinq_1", result.Where);
+
+            Assert.AreEqual(1, result.Parameters.Count);
+            Assert.AreEqual("Chris", result.Parameters["@sqlinq_1"]);
+        }
+
+        [TestMethod]
+        public void SQLinqTest_Mysql_002()
+        {
+            var query = new SQLinq<Person>(new MySqlDialect()).Where(d => d.FirstName == "Chris");
+
+            var result = (SQLinqSelectResult)query.ToSQL();
+
+            Assert.AreEqual("`FirstName` = @sqlinq_1", result.Where);
 
             Assert.AreEqual(1, result.Parameters.Count);
             Assert.AreEqual("Chris", result.Parameters["@sqlinq_1"]);
@@ -313,6 +351,22 @@ namespace SQLinqTest
         }
 
         [TestMethod]
+        public void SQLinq_Mysql_Distinct_Take_001()
+        {
+            var query = from d in new SQLinq<Person>(new MySqlDialect())
+                select d.FirstName;
+            query = query.Distinct();
+
+            query = query.Take(10);
+
+            var result = query.ToSQL();
+
+            var code = result.ToQuery();
+
+            Assert.AreEqual("SELECT DISTINCT `FirstName` FROM `Person` LIMIT 10 ", code);
+        }
+
+        [TestMethod]
         public void SQLinq_Distinct_Skip_001()
         {
             var query = from d in new SQLinq<Person>()
@@ -330,6 +384,23 @@ namespace SQLinqTest
         }
 
         [TestMethod]
+        public void SQLinq_Mysql_Distinct_Skip_001()
+        {
+            var query = from d in new SQLinq<Person>(new MySqlDialect())
+                orderby d.FirstName
+                select d.FirstName;
+            query = query.Distinct();
+
+            query = query.Skip(10);
+
+            var result = query.ToSQL();
+
+            var code = result.ToQuery();
+
+            Assert.AreEqual($"SELECT DISTINCT `FirstName` FROM `Person` ORDER BY `FirstName` LIMIT {long.MaxValue} OFFSET 10", code);
+        }
+
+        [TestMethod]
         public void SQLinq_Distinct_SkipTake_001()
         {
             var query = from d in new SQLinq<Person>()
@@ -344,6 +415,23 @@ namespace SQLinqTest
             var code = result.ToQuery();
 
             Assert.AreEqual("WITH SQLinq_data_set AS (SELECT DISTINCT [FirstName], ROW_NUMBER() OVER (ORDER BY [FirstName]) AS [SQLinq_row_number] FROM (SELECT DISTINCT [FirstName] FROM [Person]) AS d) SELECT * FROM SQLinq_data_set WHERE [SQLinq_row_number] BETWEEN 21 AND 30", code);
+        }
+
+        [TestMethod]
+        public void SQLinq_Mysql_Distinct_SkipTake_001()
+        {
+            var query = from d in new SQLinq<Person>(new MySqlDialect())
+                orderby d.FirstName
+                select d.FirstName;
+            query = query.Distinct();
+
+            query = query.Skip(20).Take(10);
+
+            var result = query.ToSQL();
+
+            var code = result.ToQuery();
+
+            Assert.AreEqual("SELECT DISTINCT `FirstName` FROM `Person` ORDER BY `FirstName` LIMIT 10 OFFSET 20", code);
         }
 
         #endregion

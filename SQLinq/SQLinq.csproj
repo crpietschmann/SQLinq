@@ -55,6 +55,7 @@
     <Compile Include="Compiler\SqlExpressionCompilerSelectorResult.cs" />
     <Compile Include="Dialect\DialectProvider.cs" />
     <Compile Include="Dialect\ISqlDialect.cs" />
+    <Compile Include="Dialect\MySqlDialect.cs" />
     <Compile Include="Dialect\OracleDialect.cs" />
     <Compile Include="Dialect\SqlServerDialect.cs" />
     <Compile Include="Dynamic\DynamicSQLinqCount.cs" />
